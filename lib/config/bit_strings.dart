@@ -1,0 +1,3 @@
+class BitStrings {
+  const BitStrings();
+}
