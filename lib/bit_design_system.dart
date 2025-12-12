@@ -1,5 +1,5 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'bit_app.dart';
+export 'config/bit_strings.dart';
+export 'config/bit_theme.dart';
+export 'components/text/bit_text.dart';
+export 'utils/extensions.dart';

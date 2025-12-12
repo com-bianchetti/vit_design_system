@@ -34,6 +34,43 @@ class BitTheme {
   final VisualDensity visualDensity;
   final Brightness brightness;
 
+  static const TextStyle titleBigStyle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle titleStyle = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle titleSmallStyle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle bodyBigStyle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.normal,
+  );
+  static const TextStyle bodyStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+  );
+  static const TextStyle bodySmallStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+  );
+  static const TextStyle labelBigStyle = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.normal,
+  );
+  static const TextStyle labelStyle = TextStyle(
+    fontSize: 8,
+    fontWeight: FontWeight.normal,
+  );
+  static const TextStyle labelSmallStyle = TextStyle(
+    fontSize: 6,
+    fontWeight: FontWeight.normal,
+  );
+
   BitTheme({
     this.primaryColor = const Color(0xff1F1F1F),
     this.secondaryColor = const Color(0xff1F1F1F),
@@ -52,42 +89,15 @@ class BitTheme {
     this.colors = const {},
     this.brightness = Brightness.light,
     this.fontFamily = 'Roboto',
-    this.titleBig = const TextStyle(
-      fontSize: 24,
-      fontWeight: FontWeight.bold,
-    ),
-    this.title = const TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-    ),
-    this.titleSmall = const TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-    this.bodyBig = const TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.normal,
-    ),
-    this.body = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.normal,
-    ),
-    this.bodySmall = const TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.normal,
-    ),
-    this.labelBig = const TextStyle(
-      fontSize: 10,
-      fontWeight: FontWeight.normal,
-    ),
-    this.label = const TextStyle(
-      fontSize: 8,
-      fontWeight: FontWeight.normal,
-    ),
-    this.labelSmall = const TextStyle(
-      fontSize: 6,
-      fontWeight: FontWeight.normal,
-    ),
+    this.titleBig = BitTheme.titleBigStyle,
+    this.title = BitTheme.titleStyle,
+    this.titleSmall = BitTheme.titleSmallStyle,
+    this.bodyBig = BitTheme.bodyBigStyle,
+    this.body = BitTheme.bodyStyle,
+    this.bodySmall = BitTheme.bodySmallStyle,
+    this.labelBig = BitTheme.labelBigStyle,
+    this.label = BitTheme.labelStyle,
+    this.labelSmall = BitTheme.labelSmallStyle,
     this.bitStrings = const BitStrings(),
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
     this.visualDensity = VisualDensity.standard,

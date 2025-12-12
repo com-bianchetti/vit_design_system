@@ -680,6 +680,7 @@ class _BitAppState extends State<BitApp> {
                   routeInformationProvider: widget.routeInformationProvider,
                   scaffoldMessengerKey: widget.scaffoldMessengerKey,
                   routerConfig: widget.routerConfig,
+                  backButtonDispatcher: widget.backButtonDispatcher,
                 )
               : MaterialApp(
                   theme: bitLightTheme,
@@ -718,6 +719,7 @@ class _BitAppState extends State<BitApp> {
                   onGenerateRoute: widget.onGenerateRoute,
                   onGenerateTitle: widget.onGenerateTitle,
                   title: widget.title,
+                  home: widget.home,
                 );
         },
       ),
