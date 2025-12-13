@@ -7,4 +7,7 @@ export 'components/button/bit_link_button.dart';
 export 'components/button/bit_outlined_button.dart';
 export 'components/button/bit_secondary_button.dart';
 export 'components/button/bit_social_button.dart';
+export 'components/avatar/bit_avatar.dart';
+export 'components/avatar/bit_avatar_group.dart';
+export 'components/avatar/bit_avatar_preview.dart';
 export 'utils/extensions.dart';

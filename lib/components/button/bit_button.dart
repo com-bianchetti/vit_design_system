@@ -279,16 +279,17 @@ class _BitButtonState extends State<BitButton> {
     return textWidth + horizontalPadding;
   }
 
-  double _getHeight(VisualDensity density) {
+  double _getHeight(VisualDensity density, BuildContext context) {
     if (widget.height != null) {
       return widget.height!;
     }
 
+    final values = context.theme.values;
     return switch (density) {
-      VisualDensity.comfortable => 65,
-      VisualDensity.standard => 50,
-      VisualDensity.compact => 40,
-      _ => 50,
+      VisualDensity.comfortable => values.buttonComfortableHeight,
+      VisualDensity.standard => values.buttonStandardHeight,
+      VisualDensity.compact => values.buttonCompactHeight,
+      _ => values.buttonStandardHeight,
     };
   }
 
@@ -321,7 +322,7 @@ class _BitButtonState extends State<BitButton> {
         ? _getDarkerColor(baseColor, widget.darkenFactor)
         : baseColor;
     final visualDensity = widget.visualDensity ?? theme.visualDensity;
-    final height = _getHeight(visualDensity);
+    final height = _getHeight(visualDensity, context);
     final borderRadius = widget.borderRadius ?? theme.borderRadius;
 
     final child = Semantics(

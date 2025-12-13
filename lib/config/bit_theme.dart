@@ -1,3 +1,4 @@
+import 'package:bit_design_system/config/bit_values.dart';
 import 'package:flutter/material.dart';
 import 'bit_strings.dart';
 
@@ -95,6 +96,9 @@ class BitTheme {
   /// Used to limit the width of the buttons when displayed in larger screens.
   final double buttonMaxWidth;
 
+  /// The values of the app. Use to define custom values.
+  final BitValues values;
+
   /// The default title big text style.
   static const TextStyle titleBigStyle = TextStyle(
     fontSize: 24,
@@ -181,5 +185,6 @@ class BitTheme {
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
     this.visualDensity = VisualDensity.standard,
     this.buttonMaxWidth = 450,
+    this.values = const BitValues(),
   });
 }
