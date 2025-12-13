@@ -1,3 +1,5 @@
+import 'package:example/button/bit_button.dart';
+import 'package:example/button/bit_social_button.dart';
 import 'package:example/text/bit_text.dart';
 import 'package:example/text/bit_text_rich.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
       stories: [
         BitTextStory,
         BitTextRichStory,
+        BitButtonStory,
+        BitSocialButtonStory,
       ],
     );
   }

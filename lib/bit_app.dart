@@ -4,6 +4,15 @@ import 'package:bit_design_system/config/bit_strings.dart';
 import 'package:bit_design_system/config/bit_theme.dart';
 import 'package:flutter/material.dart';
 
+/// A [MaterialApp] wrapper widget that configures the app with the Bit design system.
+///
+/// ## Usage
+///
+/// ```dart
+/// BitApp(
+///   home: MyHomePage(),
+/// )
+/// ```
 class BitApp extends StatefulWidget {
   /// The default theme for the app.
   final BitTheme? theme;
@@ -727,6 +736,7 @@ class _BitAppState extends State<BitApp> {
   }
 }
 
+/// A [InheritedWidget] that provides the Bit theme to the app.
 class BitAppTheme extends InheritedWidget {
   final Function(ThemeMode) changeThemeMode;
   final BitTheme theme;
