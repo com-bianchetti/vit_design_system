@@ -193,7 +193,7 @@ class _BitAvatarState extends State<BitAvatar> {
   String get _defaultSemanticsLabel =>
       'Profile picture ${widget.text != null ? 'with text "${widget.text}"' : ''}';
 
-  void _onBackgroundImageError(_, __) {
+  void _onBackgroundImageError(Object _, StackTrace? _) {
     setState(() {
       icon = widget.iconError;
       iconColor = widget.iconErrorColor ?? context.theme.cardVariantColor;
