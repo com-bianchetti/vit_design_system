@@ -4,32 +4,34 @@ import 'package:bit_design_system/bit_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
-final BitSwitchStory = Story(
-  name: 'BitSwitch',
-  description: 'BitSwitch component to display a switch',
+final BitCheckboxStory = Story(
+  name: 'BitCheckbox',
+  description: 'BitCheckbox component to display a checkbox',
   wrapperBuilder: (context, child) => BitApp(
     debugShowCheckedModeBanner: false,
     theme: BitTheme(),
     home: child,
   ),
-  builder: (context) => _BitSwitchStoryWidget(),
+  builder: (context) => _BitCheckboxStoryWidget(),
 );
 
-class _BitSwitchStoryWidget extends StatefulWidget {
+class _BitCheckboxStoryWidget extends StatefulWidget {
   @override
-  State<_BitSwitchStoryWidget> createState() => _BitSwitchStoryWidgetState();
+  State<_BitCheckboxStoryWidget> createState() =>
+      _BitCheckboxStoryWidgetState();
 }
 
-class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
-  bool standaloneSwitch = true;
-  bool comfortableSwitch = false;
-  bool standardSwitch = true;
-  bool compactSwitch = false;
-  bool leftPositionSwitch = true;
-  bool rightPositionSwitch = false;
-  bool withSubtitleSwitch = true;
-  bool disabledSwitch = false;
-  bool customColorSwitch = true;
+class _BitCheckboxStoryWidgetState extends State<_BitCheckboxStoryWidget> {
+  bool standaloneCheckbox = true;
+  bool comfortableCheckbox = false;
+  bool standardCheckbox = true;
+  bool compactCheckbox = false;
+  bool leftPositionCheckbox = true;
+  bool rightPositionCheckbox = false;
+  bool withSubtitleCheckbox = true;
+  bool disabledCheckbox = false;
+  bool customColorCheckbox = true;
+  bool? tristateCheckbox;
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +43,16 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Standalone Switch',
+                'Standalone Checkbox',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Center(
-                child: BitSwitch(
-                  value: standaloneSwitch,
+                child: BitCheckbox(
+                  value: standaloneCheckbox,
                   onChanged: (value) {
                     setState(() {
-                      standaloneSwitch = value;
+                      standaloneCheckbox = value;
                     });
                   },
                 ),
@@ -61,14 +63,14 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: comfortableSwitch,
+              BitCheckbox(
+                value: true,
                 onChanged: (value) {
                   setState(() {
-                    comfortableSwitch = value;
+                    comfortableCheckbox = value;
                   });
                 },
-                title: 'Enable Notifications',
+                title: 'Accept Terms',
                 visualDensity: VisualDensity.comfortable,
               ),
               const SizedBox(height: 16),
@@ -77,14 +79,14 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: standardSwitch,
+              BitCheckbox(
+                value: standardCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    standardSwitch = value;
+                    standardCheckbox = value;
                   });
                 },
-                title: 'Enable Bluetooth',
+                title: 'Subscribe Newsletter',
                 visualDensity: VisualDensity.standard,
               ),
               const SizedBox(height: 16),
@@ -93,9 +95,9 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                icon: const Icon(Icons.bluetooth),
-                title: 'Enable Bluetooth',
+              BitCheckbox(
+                icon: const Icon(Icons.mail_outline),
+                title: 'Subscribe Newsletter',
                 visualDensity: VisualDensity.standard,
               ),
               const SizedBox(height: 16),
@@ -104,47 +106,47 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: compactSwitch,
+              BitCheckbox(
+                value: compactCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    compactSwitch = value;
+                    compactCheckbox = value;
                   });
                 },
-                title: 'Enable Location',
+                title: 'Remember Me',
                 visualDensity: VisualDensity.compact,
               ),
               const SizedBox(height: 32),
               const Text(
-                'Switch Position: Left',
+                'Checkbox Position: Left',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: leftPositionSwitch,
+              BitCheckbox(
+                value: leftPositionCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    leftPositionSwitch = value;
+                    leftPositionCheckbox = value;
                   });
                 },
-                title: 'Dark Mode',
-                switchPosition: BitSwitchPosition.left,
+                title: 'Privacy Policy',
+                checkboxPosition: BitCheckboxPosition.left,
               ),
               const SizedBox(height: 16),
               const Text(
-                'Switch Position: Right',
+                'Checkbox Position: Right',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: rightPositionSwitch,
+              BitCheckbox(
+                value: rightPositionCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    rightPositionSwitch = value;
+                    rightPositionCheckbox = value;
                   });
                 },
-                title: 'Auto-Update',
-                switchPosition: BitSwitchPosition.right,
+                title: 'Marketing Emails',
+                checkboxPosition: BitCheckboxPosition.right,
               ),
               const SizedBox(height: 32),
               const Text(
@@ -152,26 +154,26 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: withSubtitleSwitch,
+              BitCheckbox(
+                value: withSubtitleCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    withSubtitleSwitch = value;
+                    withSubtitleCheckbox = value;
                   });
                 },
-                title: 'Push Notifications',
+                title: 'Terms and Conditions',
                 subtitle:
-                    'Receive notifications about new messages and updates',
+                    'I agree to the terms and conditions and privacy policy',
               ),
               const SizedBox(height: 32),
               const Text(
-                'Disabled Switch',
+                'Disabled Checkbox',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: disabledSwitch,
-                enabled: false,
+              BitCheckbox(
+                value: disabledCheckbox,
+                onChanged: null,
                 title: 'Premium Feature',
                 subtitle: 'Upgrade to enable this feature',
               ),
@@ -181,55 +183,78 @@ class _BitSwitchStoryWidgetState extends State<_BitSwitchStoryWidget> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              BitSwitch(
-                value: customColorSwitch,
+              BitCheckbox(
+                value: customColorCheckbox,
                 onChanged: (value) {
                   setState(() {
-                    customColorSwitch = value;
+                    customColorCheckbox = value;
                   });
                 },
                 title: 'Custom Theme',
-                subtitle: 'Switch with custom active color',
+                subtitle: 'Checkbox with custom active color',
                 activeColor: Colors.green,
               ),
               const SizedBox(height: 32),
               const Text(
-                'List of Settings',
+                'Tristate Checkbox',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitCheckbox(
+                value: tristateCheckbox,
+                onChanged: (value) {
+                  setState(() {
+                    if (tristateCheckbox == null) {
+                      tristateCheckbox = true;
+                    } else if (tristateCheckbox == true) {
+                      tristateCheckbox = false;
+                    } else {
+                      tristateCheckbox = null;
+                    }
+                  });
+                },
+                title: 'Select All',
+                subtitle: 'Supports null, true, and false states',
+                tristate: true,
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'List of Options',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Column(
                 children: [
-                  BitSwitch(
-                    value: standaloneSwitch,
+                  BitCheckbox(
+                    value: standaloneCheckbox,
                     onChanged: (value) {
                       setState(() {
-                        standaloneSwitch = value;
+                        standaloneCheckbox = value;
                       });
                     },
-                    title: 'Wi-Fi',
-                    subtitle: 'Connected to Home Network',
+                    title: 'Receive Email Updates',
+                    subtitle: 'Get notified about new features',
                   ),
                   const SizedBox(height: 8),
-                  BitSwitch(
-                    value: comfortableSwitch,
+                  BitCheckbox(
+                    value: comfortableCheckbox,
                     onChanged: (value) {
                       setState(() {
-                        comfortableSwitch = value;
+                        comfortableCheckbox = value;
                       });
                     },
-                    title: 'Airplane Mode',
-                    subtitle: 'Disable all wireless connections',
+                    title: 'Marketing Communications',
+                    subtitle: 'Receive promotional content',
                   ),
                   const SizedBox(height: 8),
-                  BitSwitch(
-                    value: standardSwitch,
+                  BitCheckbox(
+                    value: standardCheckbox,
                     onChanged: (value) {
                       setState(() {
-                        standardSwitch = value;
+                        standardCheckbox = value;
                       });
                     },
-                    title: 'Mobile Data',
+                    title: 'Product Updates',
                   ),
                 ],
               ),

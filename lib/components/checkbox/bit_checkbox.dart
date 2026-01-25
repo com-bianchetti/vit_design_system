@@ -1,93 +1,88 @@
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A customizable switch widget that provides consistent styling.
+/// A customizable checkbox widget that provides consistent styling.
 ///
-/// The [BitSwitch] can be rendered as a standalone switch or as part of a list item
+/// The [BitCheckbox] can be rendered as a standalone checkbox or as part of a list item
 /// with title, subtitle, and configurable positioning.
 ///
 /// ## Usage
 ///
-/// ### Standalone Switch
+/// ### Standalone Checkbox
 ///
 /// ```dart
-/// BitSwitch(
+/// BitCheckbox(
 ///   value: true,
 ///   onChanged: (value) {
-///     print('Switch changed to: $value');
+///     print('Checkbox changed to: $value');
 ///   },
 /// )
 /// ```
 ///
-/// ### Switch in List Item
+/// ### Checkbox in List Item
 ///
 /// ```dart
-/// BitSwitch(
+/// BitCheckbox(
 ///   value: true,
 ///   onChanged: (value) {
-///     print('Switch changed to: $value');
+///     print('Checkbox changed to: $value');
 ///   },
-///   title: 'Enable Notifications',
-///   subtitle: 'Receive push notifications',
+///   title: 'Accept Terms',
+///   subtitle: 'I agree to the terms and conditions',
 /// )
 /// ```
 ///
-/// ### Switch with Custom Position
+/// ### Checkbox with Custom Position
 ///
 /// ```dart
-/// BitSwitch(
+/// BitCheckbox(
 ///   value: false,
-///   onChanged: (value) => setState(() => isEnabled = value),
-///   title: 'Dark Mode',
-///   subtitle: 'Enable dark theme',
-///   switchPosition: BitSwitchPosition.left,
+///   onChanged: (value) => setState(() => isAccepted = value),
+///   title: 'Subscribe',
+///   subtitle: 'Receive newsletter updates',
+///   checkboxPosition: BitCheckboxPosition.left,
 /// )
 /// ```
 ///
 /// ## Customization
 ///
 /// - Use [activeColor] to customize the active state color
-/// - Use [trackColor] to customize the track color when inactive
-/// - Use [thumbColor] to customize the thumb color
+/// - Use [checkColor] to customize the check mark color
 /// - Use [title] to add a primary label in list mode
 /// - Use [subtitle] to add a secondary label in list mode
-/// - Use [switchPosition] to place the switch on left or right side
+/// - Use [checkboxPosition] to place the checkbox on left or right side
 /// - Use [visualDensity] to control the list item height
 /// - Use [semanticLabel] for accessibility
-enum BitSwitchPosition {
+enum BitCheckboxPosition {
   left,
   right,
 }
 
-class BitSwitch extends StatefulWidget {
-  /// Current state of the switch.
+class BitCheckbox extends StatefulWidget {
+  /// Current state of the checkbox.
   ///
-  /// When true, the switch is in the "on" position.
+  /// When true, the checkbox is checked.
   final bool? value;
 
-  /// Callback function invoked when the switch state changes.
+  /// Callback function invoked when the checkbox state changes.
   ///
-  /// Receives the new boolean value of the switch.
+  /// Receives the new boolean value of the checkbox.
   final ValueChanged<bool>? onChanged;
 
-  /// Active color of the switch when turned on.
+  /// Active color of the checkbox when checked.
   ///
   /// If null, uses the theme's primary color.
   final Color? activeColor;
 
-  /// Color of the track when the switch is off.
-  final Color? trackColor;
-
-  /// Color of the switch thumb.
+  /// Color of the check mark.
   ///
   /// If null, uses white color.
-  final Color? thumbColor;
+  final Color? checkColor;
 
   /// Title text for list item mode.
   ///
-  /// When provided, the switch will be rendered as part of a list item
+  /// When provided, the checkbox will be rendered as part of a list item
   /// with this text as the primary label.
   final String? title;
 
@@ -107,12 +102,12 @@ class BitSwitch extends StatefulWidget {
   /// If null, uses the theme's body small text style.
   final TextStyle? subtitleStyle;
 
-  /// Position of the switch in list item mode.
+  /// Position of the checkbox in list item mode.
   ///
-  /// Determines whether the switch appears on the left or right side
-  /// of the list item. Defaults to [BitSwitchPosition.right].
+  /// Determines whether the checkbox appears on the left or right side
+  /// of the list item. Defaults to [BitCheckboxPosition.right].
   /// Only applies when [title] is provided.
-  final BitSwitchPosition switchPosition;
+  final BitCheckboxPosition checkboxPosition;
 
   /// Visual density that controls the list item's height.
   ///
@@ -128,7 +123,7 @@ class BitSwitch extends StatefulWidget {
   /// If null and [title] is provided, uses the title as the semantic label.
   final String? semanticLabel;
 
-  /// Accessibility hint describing what happens when the switch is toggled.
+  /// Accessibility hint describing what happens when the checkbox is toggled.
   final String? hint;
 
   /// Background color of the list item.
@@ -149,7 +144,7 @@ class BitSwitch extends StatefulWidget {
   /// Only applies when [title] is provided.
   final EdgeInsets padding;
 
-  /// Icon to display on the switch.
+  /// Icon to display on the checkbox.
   ///
   /// If null, does not show any icon.
   final Widget? icon;
@@ -159,26 +154,30 @@ class BitSwitch extends StatefulWidget {
   /// If null, uses the theme's on-background variant color.
   final Color? iconColor;
 
-  /// Whether the switch is enabled.
+  /// Whether the checkbox is enabled.
   final bool enabled;
 
-  /// Creates a [BitSwitch].
+  /// Whether the checkbox should render as tristate.
+  ///
+  /// If true, the checkbox can have three states: checked, unchecked, and indeterminate (null).
+  final bool tristate;
+
+  /// Creates a [BitCheckbox].
   ///
   /// The [value] parameter is required.
-  /// The [onChanged] parameter is required for the switch to be interactive.
+  /// The [onChanged] parameter is required for the checkbox to be interactive.
   /// All other parameters are optional and have sensible defaults.
-  const BitSwitch({
+  const BitCheckbox({
     super.key,
     this.value,
     this.onChanged,
     this.activeColor,
-    this.trackColor,
-    this.thumbColor,
+    this.checkColor,
     this.title,
     this.subtitle,
     this.titleStyle,
     this.subtitleStyle,
-    this.switchPosition = BitSwitchPosition.right,
+    this.checkboxPosition = BitCheckboxPosition.right,
     this.visualDensity,
     this.semanticLabel,
     this.hint,
@@ -187,6 +186,7 @@ class BitSwitch extends StatefulWidget {
     this.icon,
     this.iconColor,
     this.enabled = true,
+    this.tristate = false,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -194,10 +194,10 @@ class BitSwitch extends StatefulWidget {
   });
 
   @override
-  State<BitSwitch> createState() => _BitSwitchState();
+  State<BitCheckbox> createState() => _BitCheckboxState();
 }
 
-class _BitSwitchState extends State<BitSwitch> {
+class _BitCheckboxState extends State<BitCheckbox> {
   bool _value = false;
 
   @override
@@ -206,27 +206,28 @@ class _BitSwitchState extends State<BitSwitch> {
     _value = widget.value ?? false;
   }
 
-  Widget _buildSwitch(BuildContext context) {
+  Widget _buildCheckbox(BuildContext context) {
     final theme = context.theme;
 
     return Semantics(
-      label: widget.semanticLabel ?? widget.title ?? 'Switch',
-      toggled: widget.value ?? _value,
+      label: widget.semanticLabel ?? widget.title ?? 'Checkbox',
+      checked: widget.value ?? _value,
       hint: widget.hint,
       excludeSemantics: true,
-      child: CupertinoSwitch(
+      child: Checkbox(
         value: widget.value ?? _value,
         onChanged: widget.enabled
-            ? (widget.onChanged ??
-                  (value) {
-                    setState(() {
-                      _value = value;
-                    });
-                  })
+            ? (widget.onChanged != null
+                  ? (value) => widget.onChanged!(value ?? false)
+                  : (value) {
+                      setState(() {
+                        _value = value ?? false;
+                      });
+                    })
             : null,
-        activeTrackColor: widget.activeColor ?? theme.primaryColor,
-        inactiveTrackColor: widget.trackColor,
-        thumbColor: widget.thumbColor ?? Colors.white,
+        activeColor: widget.activeColor ?? theme.primaryColor,
+        checkColor: widget.checkColor ?? Colors.white,
+        tristate: widget.tristate,
       ),
     );
   }
@@ -236,15 +237,15 @@ class _BitSwitchState extends State<BitSwitch> {
     final theme = context.theme;
 
     if (widget.title == null) {
-      return _buildSwitch(context);
+      return _buildCheckbox(context);
     }
 
     final visualDensity = widget.visualDensity ?? theme.visualDensity;
     final borderRadius = widget.borderRadius ?? theme.borderRadius;
-    final showBorder = theme.configuration.showSwitchItemBorder;
-    final showBackground = theme.configuration.showSwitchItemBackground;
+    final showBorder = theme.configuration.showCheckboxItemBorder;
+    final showBackground = theme.configuration.showCheckboxItemBackground;
 
-    final switchWidget = _buildSwitch(context);
+    final checkboxWidget = _buildCheckbox(context);
 
     final titleWidget = BitText(
       widget.title!,
@@ -288,13 +289,13 @@ class _BitSwitchState extends State<BitSwitch> {
           contentPadding: widget.padding,
           iconColor: widget.iconColor ?? theme.onBackgroundVariantColor,
           child: ListTile(
-            leading: widget.switchPosition == BitSwitchPosition.left
-                ? switchWidget
+            leading: widget.checkboxPosition == BitCheckboxPosition.left
+                ? checkboxWidget
                 : widget.icon,
             title: titleWidget,
             subtitle: subtitleWidget,
-            trailing: widget.switchPosition == BitSwitchPosition.right
-                ? switchWidget
+            trailing: widget.checkboxPosition == BitCheckboxPosition.right
+                ? checkboxWidget
                 : widget.icon,
             visualDensity: visualDensity,
             dense: visualDensity == VisualDensity.compact,
