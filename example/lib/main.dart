@@ -5,6 +5,7 @@ import 'package:example/badge/bit_badge.dart';
 import 'package:example/dialog/bit_dialog.dart';
 import 'package:example/popover/bit_popover.dart';
 import 'package:example/sheet/bit_sheet.dart';
+import 'package:example/switch/bit_switch.dart';
 import 'package:example/text/bit_text.dart';
 import 'package:example/text/bit_text_rich.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         BitSheetStory,
         BitDialogStory,
         BitPopoverStory,
+        BitSwitchStory,
       ],
     );
   }

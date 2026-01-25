@@ -1,3 +1,4 @@
+import 'package:bit_design_system/config/bit_configuration.dart';
 import 'package:bit_design_system/config/bit_values.dart';
 import 'package:flutter/material.dart';
 import 'bit_strings.dart';
@@ -34,6 +35,9 @@ class BitTheme {
 
   /// The on secondary color of the app.
   final Color onSecondaryColor;
+
+  /// The on background variant color of the app.
+  final Color onBackgroundVariantColor;
 
   /// The error color of the app.
   final Color errorColor;
@@ -98,6 +102,9 @@ class BitTheme {
 
   /// The values of the app. Use to define custom values.
   final BitValues values;
+
+  /// The configuration of the app. Use to define custom configuration.
+  final BitConfiguration configuration;
 
   /// The default title big text style.
   static const TextStyle titleBigStyle = TextStyle(
@@ -169,6 +176,7 @@ class BitTheme {
     this.successColor = const Color(0xff52C41A),
     this.disabledColor = const Color(0xffCBCBCB),
     this.borderColor = const Color(0xffE2E2E2),
+    this.onBackgroundVariantColor = const Color(0xff666666),
     this.colors = const {},
     this.brightness = Brightness.light,
     this.fontFamily = 'Inter',
@@ -186,5 +194,6 @@ class BitTheme {
     this.visualDensity = VisualDensity.standard,
     this.buttonMaxWidth = 450,
     this.values = const BitValues(),
+    this.configuration = const BitConfiguration(),
   });
 }

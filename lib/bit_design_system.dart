@@ -13,4 +13,5 @@ export 'components/avatar/bit_avatar_preview.dart';
 export 'components/sheet/bit_sheet.dart';
 export 'components/dialog/bit_dialog.dart';
 export 'components/popover/bit_popover.dart';
+export 'components/switch/bit_switch.dart';
 export 'utils/extensions.dart';
