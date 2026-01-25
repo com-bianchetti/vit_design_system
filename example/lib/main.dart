@@ -2,6 +2,7 @@ import 'package:example/avatar/bit_avatar.dart';
 import 'package:example/button/bit_button.dart';
 import 'package:example/button/bit_social_button.dart';
 import 'package:example/badge/bit_badge.dart';
+import 'package:example/popover/bit_popover.dart';
 import 'package:example/sheet/bit_sheet.dart';
 import 'package:example/text/bit_text.dart';
 import 'package:example/text/bit_text_rich.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         BitAvatarStory,
         BitBadgeStory,
         BitSheetStory,
+        BitPopoverStory,
       ],
     );
   }
