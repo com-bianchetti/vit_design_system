@@ -10,4 +10,5 @@ export 'components/button/bit_social_button.dart';
 export 'components/avatar/bit_avatar.dart';
 export 'components/avatar/bit_avatar_group.dart';
 export 'components/avatar/bit_avatar_preview.dart';
+export 'components/sheet/bit_sheet.dart';
 export 'utils/extensions.dart';
