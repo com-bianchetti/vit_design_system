@@ -15,4 +15,5 @@ export 'components/dialog/bit_dialog.dart';
 export 'components/popover/bit_popover.dart';
 export 'components/switch/bit_switch.dart';
 export 'components/checkbox/bit_checkbox.dart';
+export 'components/radio/bit_radio.dart';
 export 'utils/extensions.dart';

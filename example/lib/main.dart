@@ -5,6 +5,7 @@ import 'package:example/badge/bit_badge.dart';
 import 'package:example/checkbox/bit_checkbox.dart';
 import 'package:example/dialog/bit_dialog.dart';
 import 'package:example/popover/bit_popover.dart';
+import 'package:example/radio/bit_radio.dart';
 import 'package:example/sheet/bit_sheet.dart';
 import 'package:example/switch/bit_switch.dart';
 import 'package:example/text/bit_text.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         BitPopoverStory,
         BitSwitchStory,
         BitCheckboxStory,
+        BitRadioStory,
       ],
     );
   }
