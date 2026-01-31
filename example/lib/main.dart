@@ -3,6 +3,7 @@ import 'package:example/button/bit_button.dart';
 import 'package:example/button/bit_social_button.dart';
 import 'package:example/badge/bit_badge.dart';
 import 'package:example/checkbox/bit_checkbox.dart';
+import 'package:example/date/bit_date.dart';
 import 'package:example/dialog/bit_dialog.dart';
 import 'package:example/input/bit_input.dart';
 import 'package:example/input/bit_raw_input.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         BitRawInputStory,
         BitInputCountStory,
         BitSelectStory,
+        BitDateStory,
       ],
     );
   }

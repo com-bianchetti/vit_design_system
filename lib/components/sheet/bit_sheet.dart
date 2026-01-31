@@ -469,7 +469,7 @@ class _BitSheetState extends State<BitSheet> {
     final RenderBox? renderBox =
         _contentKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null && mounted) {
-      final contentHeight = renderBox.size.height;
+      final contentHeight = renderBox.size.height + 20;
       final availableHeight = MediaQuery.of(context).size.height;
 
       setState(() {

@@ -367,7 +367,7 @@ class _BitSelectStoryWidgetState extends State<_BitSelectStoryWidget> {
               BitSelect(
                 label: 'Custom',
                 hintText: 'Custom styling',
-                backgroundColor: Colors.blue.withOpacity(0.1),
+                backgroundColor: Colors.blue.withValues(alpha: 0.1),
                 focusedBorderColor: Colors.blue,
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
                 options: const ['Option 1', 'Option 2', 'Option 3'],

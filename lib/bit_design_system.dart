@@ -20,5 +20,6 @@ export 'components/input/bit_input.dart';
 export 'components/input/bit_raw_input.dart';
 export 'components/input/bit_input_count.dart';
 export 'components/select/bit_select.dart';
+export 'components/date/bit_date.dart';
 export 'config/bit_types.dart';
 export 'utils/extensions.dart';

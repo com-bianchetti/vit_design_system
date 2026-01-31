@@ -266,13 +266,13 @@ class BitSelect extends StatefulWidget {
 
   /// The hint text for the search input inside the popover.
   ///
-  /// Defaults to 'Search...'.
-  final String searchHintText;
+  /// If null, uses the value from BitStrings.
+  final String? searchHintText;
 
   /// The text displayed when no options match the search query.
   ///
-  /// Defaults to 'No results found'.
-  final String noResultsText;
+  /// If null, uses the value from BitStrings.
+  final String? noResultsText;
 
   /// The color of the selected option in the list.
   ///
@@ -328,8 +328,8 @@ class BitSelect extends StatefulWidget {
 
   /// The text for the confirm button in multi-selection mode.
   ///
-  /// Defaults to 'Confirm'.
-  final String confirmButtonText;
+  /// If null, uses the value from BitStrings.
+  final String? confirmButtonText;
 
   /// The separator used when displaying multiple selected values.
   ///
@@ -373,8 +373,8 @@ class BitSelect extends StatefulWidget {
     this.visualDensity,
     this.maxHeight,
     this.searchDebounce = const Duration(milliseconds: 300),
-    this.searchHintText = 'Search...',
-    this.noResultsText = 'No results found',
+    this.searchHintText,
+    this.noResultsText,
     this.selectedOptionColor,
     this.optionStyle,
     this.selectedOptionStyle,
@@ -385,7 +385,7 @@ class BitSelect extends StatefulWidget {
     this.showSearch = true,
     this.selectItemsPadding,
     this.multiSelection = false,
-    this.confirmButtonText = 'Confirm',
+    this.confirmButtonText,
     this.multiValueSeparator = ', ',
   });
 
@@ -462,6 +462,8 @@ class _BitSelectState extends State<BitSelect> {
   Future<void> _showOptions() async {
     if (!widget.enabled) return;
 
+    final strings = context.theme.bitStrings;
+
     await BitPopover.show(
       context,
       title: widget.label != null ? Text(widget.label!) : null,
@@ -470,8 +472,8 @@ class _BitSelectState extends State<BitSelect> {
               options: widget.options,
               selectedValues: _selectedValues,
               onConfirm: _handleMultipleOptionsConfirmed,
-              searchHintText: widget.searchHintText,
-              noResultsText: widget.noResultsText,
+              searchHintText: widget.searchHintText ?? strings.searchHint,
+              noResultsText: widget.noResultsText ?? strings.noResultsFound,
               searchDebounce: widget.searchDebounce,
               selectedOptionColor: widget.selectedOptionColor,
               optionStyle: widget.optionStyle,
@@ -480,14 +482,14 @@ class _BitSelectState extends State<BitSelect> {
               selectedIcon: widget.selectedIcon,
               showSearch: widget.showSearch,
               selectItemsPadding: widget.selectItemsPadding,
-              confirmButtonText: widget.confirmButtonText,
+              confirmButtonText: widget.confirmButtonText ?? strings.confirm,
             )
           : _BitSelectPopoverContent(
               options: widget.options,
               selectedValue: _selectedValue,
               onOptionSelected: _handleOptionSelected,
-              searchHintText: widget.searchHintText,
-              noResultsText: widget.noResultsText,
+              searchHintText: widget.searchHintText ?? strings.searchHint,
+              noResultsText: widget.noResultsText ?? strings.noResultsFound,
               searchDebounce: widget.searchDebounce,
               selectedOptionColor: widget.selectedOptionColor,
               optionStyle: widget.optionStyle,
