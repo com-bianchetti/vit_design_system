@@ -395,4 +395,191 @@ void main() {
       expect(find.text('No countries found'), findsOneWidget);
     });
   });
+
+  group('BitSelect - Multi-Selection', () {
+    testWidgets('renders with initial values in multi-selection mode', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              initialValues: const ['Tag1', 'Tag3'],
+              options: const ['Tag1', 'Tag2', 'Tag3', 'Tag4'],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Tag1, Tag3'), findsOneWidget);
+    });
+
+    testWidgets('shows confirm button in multi-selection mode', (tester) async {
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              options: const ['Tag1', 'Tag2', 'Tag3'],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(BitInput));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Confirm'), findsOneWidget);
+      expect(find.byType(BitButton), findsOneWidget);
+    });
+
+    testWidgets('confirms multi-selection and updates display', (tester) async {
+      List<String>? selectedValues;
+
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              options: const ['Tag1', 'Tag2', 'Tag3'],
+              onChangedMultiple: (values) {
+                selectedValues = values;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(BitInput));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Tag1'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Tag3'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+
+      expect(selectedValues, ['Tag1', 'Tag3']);
+      expect(find.text('Tag1, Tag3'), findsOneWidget);
+    });
+
+    testWidgets('uses custom confirm button text', (tester) async {
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              confirmButtonText: 'Apply Selection',
+              options: const ['Tag1', 'Tag2', 'Tag3'],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(BitInput));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Apply Selection'), findsOneWidget);
+    });
+
+    testWidgets('uses custom separator for multiple values', (tester) async {
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              multiValueSeparator: ' | ',
+              initialValues: const ['Tag1', 'Tag2'],
+              options: const ['Tag1', 'Tag2', 'Tag3'],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Tag1 | Tag2'), findsOneWidget);
+    });
+
+    testWidgets('works in controlled mode with multiple values', (
+      tester,
+    ) async {
+      List<String> selectedValues = ['Tag1'];
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return BitApp(
+              theme: BitTheme(),
+              home: Scaffold(
+                body: BitSelect(
+                  label: 'Tags',
+                  multiSelection: true,
+                  values: selectedValues,
+                  options: const ['Tag1', 'Tag2', 'Tag3'],
+                  onChangedMultiple: (values) {
+                    setState(() {
+                      selectedValues = values;
+                    });
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      expect(find.text('Tag1'), findsOneWidget);
+
+      await tester.tap(find.byType(BitInput));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Tag2'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tag1, Tag2'), findsOneWidget);
+      expect(selectedValues, ['Tag1', 'Tag2']);
+    });
+
+    testWidgets('search works in multi-selection mode', (tester) async {
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: BitSelect(
+              label: 'Tags',
+              multiSelection: true,
+              options: const ['Apple', 'Banana', 'Cherry', 'Date'],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(BitInput));
+      await tester.pumpAndSettle();
+
+      final searchField = find.widgetWithText(BitInput, 'Search...');
+      await tester.enterText(searchField, 'an');
+      await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+      expect(find.text('Banana'), findsOneWidget);
+      expect(find.text('Apple'), findsNothing);
+      expect(find.text('Cherry'), findsNothing);
+    });
+  });
 }

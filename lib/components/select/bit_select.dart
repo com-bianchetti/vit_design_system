@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bit_design_system/components/button/bit_button.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/components/popover/bit_popover.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
@@ -82,6 +83,20 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 ///
+/// ### Multi-Selection Select
+///
+/// ```dart
+/// BitSelect(
+///   label: 'Tags',
+///   options: ['Tag1', 'Tag2', 'Tag3', 'Tag4'],
+///   multiSelection: true,
+///   initialValues: ['Tag1', 'Tag3'],
+///   onChangedMultiple: (values) {
+///     print('Selected: $values');
+///   },
+/// )
+/// ```
+///
 /// ### Disabled Select
 ///
 /// ```dart
@@ -98,27 +113,46 @@ import 'package:flutter/material.dart';
 /// - Use [label] to add a floating or fixed label
 /// - Use [hintText] for placeholder text
 /// - Use [leading] for icons or widgets
-/// - Use [value] for controlled state
-/// - Use [initialValue] for uncontrolled initial state
+/// - Use [value] for controlled state (single selection)
+/// - Use [values] for controlled state (multi-selection)
+/// - Use [initialValue] for uncontrolled initial state (single selection)
+/// - Use [initialValues] for uncontrolled initial state (multi-selection)
+/// - Use [multiSelection] to enable multi-selection mode
 /// - Use [enabled] to disable the select
 /// - Use [maxHeight] to control popover height
 /// - Use [searchDebounce] to adjust search responsiveness
 /// - Use [searchHintText] to customize search placeholder
 /// - Use [noResultsText] to customize empty state message
+/// - Use [confirmButtonText] to customize confirm button text in multi-selection mode
 class BitSelect extends StatefulWidget {
   /// The list of options to display in the dropdown.
   final List<String> options;
 
-  /// The currently selected value.
+  /// The currently selected value (single selection mode).
   ///
   /// If provided, this makes the select controlled. Use with [onChanged]
   /// to update the value when selection changes.
+  /// Only used when [multiSelection] is false.
   final String? value;
 
-  /// The initial value of the select.
+  /// The currently selected values (multi-selection mode).
+  ///
+  /// If provided, this makes the select controlled. Use with [onChangedMultiple]
+  /// to update the values when selection changes.
+  /// Only used when [multiSelection] is true.
+  final List<String>? values;
+
+  /// The initial value of the select (single selection mode).
   ///
   /// This is only used when [value] is null (uncontrolled mode).
+  /// Only used when [multiSelection] is false.
   final String? initialValue;
+
+  /// The initial values of the select (multi-selection mode).
+  ///
+  /// This is only used when [values] is null (uncontrolled mode).
+  /// Only used when [multiSelection] is true.
+  final List<String>? initialValues;
 
   /// The label text displayed above or inside the select.
   final String? label;
@@ -135,8 +169,15 @@ class BitSelect extends StatefulWidget {
   /// Widget displayed before the select field.
   final Widget? leading;
 
-  /// Callback function invoked when the selected value changes.
+  /// Callback function invoked when the selected value changes (single selection mode).
+  ///
+  /// Only used when [multiSelection] is false.
   final ValueChanged<String?>? onChanged;
+
+  /// Callback function invoked when the selected values change (multi-selection mode).
+  ///
+  /// Only used when [multiSelection] is true.
+  final ValueChanged<List<String>>? onChangedMultiple;
 
   /// Validator function for form validation.
   ///
@@ -278,6 +319,23 @@ class BitSelect extends StatefulWidget {
   /// If null, uses the theme's select items padding.
   final EdgeInsetsGeometry? selectItemsPadding;
 
+  /// Whether to allow multiple selections.
+  ///
+  /// When true, users can select multiple options and a confirm button
+  /// will be displayed at the bottom of the popover.
+  /// Defaults to false.
+  final bool multiSelection;
+
+  /// The text for the confirm button in multi-selection mode.
+  ///
+  /// Defaults to 'Confirm'.
+  final String confirmButtonText;
+
+  /// The separator used when displaying multiple selected values.
+  ///
+  /// Defaults to ', '.
+  final String multiValueSeparator;
+
   /// Creates a [BitSelect].
   ///
   /// The [options] parameter is required. All other parameters are optional
@@ -286,13 +344,16 @@ class BitSelect extends StatefulWidget {
     super.key,
     required this.options,
     this.value,
+    this.values,
     this.initialValue,
+    this.initialValues,
     this.label,
     this.hintText,
     this.helperText,
     this.errorText,
     this.leading,
     this.onChanged,
+    this.onChangedMultiple,
     this.validator,
     this.enabled = true,
     this.style,
@@ -323,6 +384,9 @@ class BitSelect extends StatefulWidget {
     this.selectedIcon = Icons.check,
     this.showSearch = true,
     this.selectItemsPadding,
+    this.multiSelection = false,
+    this.confirmButtonText = 'Confirm',
+    this.multiValueSeparator = ', ',
   });
 
   @override
@@ -331,21 +395,35 @@ class BitSelect extends StatefulWidget {
 
 class _BitSelectState extends State<BitSelect> {
   late String? _selectedValue;
+  late List<String> _selectedValues;
   final TextEditingController _displayController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _selectedValue = widget.value ?? widget.initialValue;
+    if (widget.multiSelection) {
+      _selectedValues = widget.values ?? widget.initialValues ?? [];
+      _selectedValue = null;
+    } else {
+      _selectedValue = widget.value ?? widget.initialValue;
+      _selectedValues = [];
+    }
     _updateDisplayText();
   }
 
   @override
   void didUpdateWidget(BitSelect oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.value != oldWidget.value) {
-      _selectedValue = widget.value;
-      _updateDisplayText();
+    if (widget.multiSelection) {
+      if (widget.values != oldWidget.values) {
+        _selectedValues = widget.values ?? [];
+        _updateDisplayText();
+      }
+    } else {
+      if (widget.value != oldWidget.value) {
+        _selectedValue = widget.value;
+        _updateDisplayText();
+      }
     }
   }
 
@@ -356,7 +434,11 @@ class _BitSelectState extends State<BitSelect> {
   }
 
   void _updateDisplayText() {
-    _displayController.text = _selectedValue ?? '';
+    if (widget.multiSelection) {
+      _displayController.text = _selectedValues.join(widget.multiValueSeparator);
+    } else {
+      _displayController.text = _selectedValue ?? '';
+    }
   }
 
   void _handleOptionSelected(String option) {
@@ -368,33 +450,59 @@ class _BitSelectState extends State<BitSelect> {
     Navigator.of(context).pop();
   }
 
+  void _handleMultipleOptionsConfirmed(List<String> options) {
+    setState(() {
+      _selectedValues = options;
+      _updateDisplayText();
+    });
+    widget.onChangedMultiple?.call(options);
+    Navigator.of(context).pop();
+  }
+
   Future<void> _showOptions() async {
     if (!widget.enabled) return;
 
     await BitPopover.show(
       context,
-      title: widget.label != null ? BitTitle(widget.label!) : null,
-      content: _BitSelectPopoverContent(
-        options: widget.options,
-        selectedValue: _selectedValue,
-        onOptionSelected: _handleOptionSelected,
-        searchHintText: widget.searchHintText,
-        noResultsText: widget.noResultsText,
-        searchDebounce: widget.searchDebounce,
-        selectedOptionColor: widget.selectedOptionColor,
-        optionStyle: widget.optionStyle,
-        selectedOptionStyle: widget.selectedOptionStyle,
-        showSelectedIcon: widget.showSelectedIcon,
-        selectedIcon: widget.selectedIcon,
-        showSearch: widget.showSearch,
-        selectItemsPadding: widget.selectItemsPadding,
-      ),
+      title: widget.label != null ? Text(widget.label!) : null,
+      content: widget.multiSelection
+          ? _BitSelectMultiPopoverContent(
+              options: widget.options,
+              selectedValues: _selectedValues,
+              onConfirm: _handleMultipleOptionsConfirmed,
+              searchHintText: widget.searchHintText,
+              noResultsText: widget.noResultsText,
+              searchDebounce: widget.searchDebounce,
+              selectedOptionColor: widget.selectedOptionColor,
+              optionStyle: widget.optionStyle,
+              selectedOptionStyle: widget.selectedOptionStyle,
+              showSelectedIcon: widget.showSelectedIcon,
+              selectedIcon: widget.selectedIcon,
+              showSearch: widget.showSearch,
+              selectItemsPadding: widget.selectItemsPadding,
+              confirmButtonText: widget.confirmButtonText,
+            )
+          : _BitSelectPopoverContent(
+              options: widget.options,
+              selectedValue: _selectedValue,
+              onOptionSelected: _handleOptionSelected,
+              searchHintText: widget.searchHintText,
+              noResultsText: widget.noResultsText,
+              searchDebounce: widget.searchDebounce,
+              selectedOptionColor: widget.selectedOptionColor,
+              optionStyle: widget.optionStyle,
+              selectedOptionStyle: widget.selectedOptionStyle,
+              showSelectedIcon: widget.showSelectedIcon,
+              selectedIcon: widget.selectedIcon,
+              showSearch: widget.showSearch,
+              selectItemsPadding: widget.selectItemsPadding,
+            ),
       maxSize: widget.maxHeight != null
           ? widget.maxHeight! / MediaQuery.sizeOf(context).height
           : null,
       borderRadius: widget.popoverBorderRadius,
       isDismissible: true,
-      fixedFooter: false,
+      fixedFooter: widget.multiSelection,
     );
   }
 
@@ -598,6 +706,200 @@ class _BitSelectPopoverContentState extends State<_BitSelectPopoverContent> {
               ),
             );
           }),
+      ],
+    );
+  }
+}
+
+class _BitSelectMultiPopoverContent extends StatefulWidget {
+  final List<String> options;
+  final List<String> selectedValues;
+  final ValueChanged<List<String>> onConfirm;
+  final String searchHintText;
+  final String noResultsText;
+  final Duration searchDebounce;
+  final Color? selectedOptionColor;
+  final TextStyle? optionStyle;
+  final TextStyle? selectedOptionStyle;
+  final bool showSelectedIcon;
+  final IconData selectedIcon;
+  final bool showSearch;
+  final EdgeInsetsGeometry? selectItemsPadding;
+  final String confirmButtonText;
+
+  const _BitSelectMultiPopoverContent({
+    required this.options,
+    required this.selectedValues,
+    required this.onConfirm,
+    required this.searchHintText,
+    required this.noResultsText,
+    required this.searchDebounce,
+    this.selectedOptionColor,
+    this.optionStyle,
+    this.selectedOptionStyle,
+    required this.showSelectedIcon,
+    required this.selectedIcon,
+    required this.showSearch,
+    this.selectItemsPadding,
+    required this.confirmButtonText,
+  });
+
+  @override
+  State<_BitSelectMultiPopoverContent> createState() =>
+      _BitSelectMultiPopoverContentState();
+}
+
+class _BitSelectMultiPopoverContentState
+    extends State<_BitSelectMultiPopoverContent> {
+  final TextEditingController _searchController = TextEditingController();
+  List<String> _filteredOptions = [];
+  late List<String> _tempSelectedValues;
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredOptions = widget.options;
+    _tempSelectedValues = List.from(widget.selectedValues);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(widget.searchDebounce, () {
+      setState(() {
+        final query = _searchController.text.toLowerCase().trim();
+        if (query.isEmpty) {
+          _filteredOptions = widget.options;
+        } else {
+          _filteredOptions = widget.options
+              .where((option) => option.toLowerCase().contains(query))
+              .toList();
+        }
+      });
+    });
+  }
+
+  void _toggleOption(String option) {
+    setState(() {
+      if (_tempSelectedValues.contains(option)) {
+        _tempSelectedValues.remove(option);
+      } else {
+        _tempSelectedValues.add(option);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final effectiveSelectedOptionColor =
+        widget.selectedOptionColor ?? theme.cardVariantColor;
+    final effectiveOptionStyle = widget.optionStyle ?? theme.body;
+    final effectiveSelectedOptionStyle =
+        widget.selectedOptionStyle ??
+        effectiveOptionStyle.copyWith(
+          color: theme.primaryColor,
+          fontWeight: FontWeight.w600,
+        );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.showSearch)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: BitInput(
+              controller: _searchController,
+              hintText: widget.searchHintText,
+              leading: const Icon(Icons.search),
+              trailing: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                    )
+                  : null,
+            ),
+          ),
+        if (_filteredOptions.isEmpty)
+          SizedBox(
+            height: 32,
+            child: BitText(
+              widget.noResultsText,
+              style: theme.body.copyWith(
+                color: theme.onBackgroundVariantColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        if (_filteredOptions.isNotEmpty)
+          Flexible(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _filteredOptions.length,
+              itemBuilder: (context, index) {
+                final option = _filteredOptions[index];
+                final isSelected = _tempSelectedValues.contains(option);
+
+                return InkWell(
+                  onTap: () => _toggleOption(option),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected ? effectiveSelectedOptionColor : null,
+                    ),
+                    padding:
+                        widget.selectItemsPadding ??
+                        switch (theme.visualDensity) {
+                          VisualDensity.compact =>
+                            theme.values.selectItemCompactPadding,
+                          VisualDensity.standard =>
+                            theme.values.selectItemStandardPadding,
+                          VisualDensity.comfortable =>
+                            theme.values.selectItemComfortablePadding,
+                          _ => theme.values.selectItemStandardPadding,
+                        },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BitText(
+                            option,
+                            style: isSelected
+                                ? effectiveSelectedOptionStyle
+                                : effectiveOptionStyle,
+                          ),
+                        ),
+                        if (isSelected && widget.showSelectedIcon)
+                          Icon(
+                            widget.selectedIcon,
+                            color: theme.primaryColor,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: BitButton(
+            text: widget.confirmButtonText,
+            onPressed: () => widget.onConfirm(_tempSelectedValues),
+          ),
+        ),
       ],
     );
   }

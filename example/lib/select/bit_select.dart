@@ -25,6 +25,9 @@ class _BitSelectStoryWidgetState extends State<_BitSelectStoryWidget> {
   String? selectedCity;
   String? selectedCategory;
   String? controlledValue = 'Option 1';
+  List<String> selectedTags = ['Tag1', 'Tag3'];
+  List<String> selectedFruits = [];
+  List<String> controlledMultiValues = ['Option 1', 'Option 2'];
 
   final countries = [
     'United States',
@@ -238,6 +241,122 @@ class _BitSelectStoryWidgetState extends State<_BitSelectStoryWidget> {
                 hintText: 'Select an option',
                 showSelectedIcon: false,
                 options: const ['Option 1', 'Option 2', 'Option 3'],
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Multi-Selection',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitSelect(
+                label: 'Tags',
+                hintText: 'Select tags',
+                multiSelection: true,
+                values: selectedTags,
+                options: const [
+                  'Tag1',
+                  'Tag2',
+                  'Tag3',
+                  'Tag4',
+                  'Tag5',
+                  'Tag6',
+                ],
+                onChangedMultiple: (values) {
+                  setState(() {
+                    selectedTags = values;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Selected: ${selectedTags.join(', ')}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Multi-Selection with Initial Values',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitSelect(
+                label: 'Fruits',
+                hintText: 'Select fruits',
+                multiSelection: true,
+                initialValues: const ['Apple', 'Cherry'],
+                options: const [
+                  'Apple',
+                  'Banana',
+                  'Cherry',
+                  'Date',
+                  'Elderberry',
+                  'Fig',
+                ],
+                onChangedMultiple: (values) {
+                  setState(() {
+                    selectedFruits = values;
+                  });
+                },
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Multi-Selection with Custom Separator',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitSelect(
+                label: 'Colors',
+                hintText: 'Select colors',
+                multiSelection: true,
+                multiValueSeparator: ' | ',
+                options: const [
+                  'Red',
+                  'Green',
+                  'Blue',
+                  'Yellow',
+                  'Purple',
+                ],
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Multi-Selection with Custom Button Text',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitSelect(
+                label: 'Categories',
+                hintText: 'Select categories',
+                multiSelection: true,
+                confirmButtonText: 'Apply Selection',
+                options: categories,
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Controlled Multi-Selection',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              BitSelect(
+                label: 'Controlled Multi',
+                hintText: 'Select options',
+                multiSelection: true,
+                values: controlledMultiValues,
+                options: const [
+                  'Option 1',
+                  'Option 2',
+                  'Option 3',
+                  'Option 4',
+                  'Option 5',
+                ],
+                onChangedMultiple: (values) {
+                  setState(() {
+                    controlledMultiValues = values;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Selected: ${controlledMultiValues.join(', ')}',
+                style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 32),
               const Text(
