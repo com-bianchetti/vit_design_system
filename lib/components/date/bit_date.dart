@@ -93,6 +93,32 @@ import 'package:intl/intl.dart';
 /// )
 /// ```
 ///
+/// ### Date Picker with Month/Year Selection
+///
+/// ```dart
+/// BitDate(
+///   label: 'Birth Date',
+///   hintText: 'Select your birth date',
+///   selectDate: true,
+///   onChanged: (date) {
+///     print('Selected: $date');
+///   },
+/// )
+/// ```
+///
+/// ### Date Range with Month/Year Selection
+///
+/// ```dart
+/// BitDate(
+///   label: 'Project Duration',
+///   rangeSelection: true,
+///   selectDate: true,
+///   onRangeChanged: (start, end) {
+///     print('Range: $start - $end');
+///   },
+/// )
+/// ```
+///
 /// ## Customization
 ///
 /// - Use [label] to add a floating or fixed label
@@ -107,6 +133,7 @@ import 'package:intl/intl.dart';
 /// - Use [dateFormat] to customize date display format
 /// - Use [minDate] and [maxDate] to restrict selectable dates
 /// - Use [confirmButtonText] to customize confirm button text in range mode
+/// - Use [selectDate] to enable month and year selection via dropdown in the calendar header
 class BitDate extends StatefulWidget {
   final DateTime? value;
   final DateTime? rangeStart;
@@ -155,6 +182,22 @@ class BitDate extends StatefulWidget {
   final TextStyle? dayStyle;
   final TextStyle? weekdayStyle;
   final TextStyle? headerStyle;
+  
+  /// Whether to enable month and year selection in the calendar header.
+  ///
+  /// When true, the calendar header displays dropdown icons next to the month
+  /// and year, allowing users to select specific months and years before choosing
+  /// a date. When false (default), users can only navigate between months using
+  /// the left/right arrow buttons.
+  ///
+  /// Example:
+  /// ```dart
+  /// BitDate(
+  ///   label: 'Birth Date',
+  ///   selectDate: true,
+  /// )
+  /// ```
+  final bool selectDate;
 
   const BitDate({
     super.key,
@@ -201,6 +244,7 @@ class BitDate extends StatefulWidget {
     this.dayStyle,
     this.weekdayStyle,
     this.headerStyle,
+    this.selectDate = false,
   });
 
   @override
@@ -348,6 +392,7 @@ class _BitDateState extends State<BitDate> {
               weekdayStyle: widget.weekdayStyle,
               headerStyle: widget.headerStyle,
               confirmButtonText: widget.confirmButtonText ?? strings.confirm,
+              selectDate: widget.selectDate,
             )
           : _BitDateCalendar(
               selectedDate: _selectedDate,
@@ -359,6 +404,7 @@ class _BitDateState extends State<BitDate> {
               dayStyle: widget.dayStyle,
               weekdayStyle: widget.weekdayStyle,
               headerStyle: widget.headerStyle,
+              selectDate: widget.selectDate,
             ),
       borderRadius: widget.popoverBorderRadius,
       isDismissible: true,
@@ -417,6 +463,7 @@ class _BitDateCalendar extends StatefulWidget {
   final TextStyle? dayStyle;
   final TextStyle? weekdayStyle;
   final TextStyle? headerStyle;
+  final bool selectDate;
 
   const _BitDateCalendar({
     required this.selectedDate,
@@ -428,14 +475,18 @@ class _BitDateCalendar extends StatefulWidget {
     this.dayStyle,
     this.weekdayStyle,
     this.headerStyle,
+    this.selectDate = false,
   });
 
   @override
   State<_BitDateCalendar> createState() => _BitDateCalendarState();
 }
 
+enum _CalendarView { days, months, years }
+
 class _BitDateCalendarState extends State<_BitDateCalendar> {
   late DateTime _displayedMonth;
+  _CalendarView _currentView = _CalendarView.days;
 
   @override
   void initState() {
@@ -458,6 +509,38 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
         _displayedMonth.year,
         _displayedMonth.month + 1,
       );
+    });
+  }
+
+  void _previousYear() {
+    setState(() {
+      _displayedMonth = DateTime(
+        _displayedMonth.year - 1,
+        _displayedMonth.month,
+      );
+    });
+  }
+
+  void _nextYear() {
+    setState(() {
+      _displayedMonth = DateTime(
+        _displayedMonth.year + 1,
+        _displayedMonth.month,
+      );
+    });
+  }
+
+  void _handleMonthSelected(int month) {
+    setState(() {
+      _displayedMonth = DateTime(_displayedMonth.year, month);
+      _currentView = _CalendarView.days;
+    });
+  }
+
+  void _handleYearSelected(int year) {
+    setState(() {
+      _displayedMonth = DateTime(year, _displayedMonth.month);
+      _currentView = _CalendarView.days;
     });
   }
 
@@ -490,35 +573,158 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: _previousMonth,
-                ),
-                BitText(
-                  '${_getMonthName(_displayedMonth.month, locale)} ${_displayedMonth.year}',
-                  style: effectiveHeaderStyle,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: _nextMonth,
-                ),
-              ],
+            child: _buildHeader(effectiveHeaderStyle, locale),
+          ),
+          if (_currentView == _CalendarView.days) ...[
+            _buildWeekdayHeaders(effectiveWeekdayStyle, locale),
+            const SizedBox(height: 8),
+            _buildCalendarGrid(
+              theme,
+              effectiveSelectedColor,
+              effectiveTodayColor,
+              effectiveDayStyle,
             ),
-          ),
-          _buildWeekdayHeaders(effectiveWeekdayStyle, locale),
-          const SizedBox(height: 8),
-          _buildCalendarGrid(
-            theme,
-            effectiveSelectedColor,
-            effectiveTodayColor,
-            effectiveDayStyle,
-          ),
+          ] else if (_currentView == _CalendarView.months)
+            _buildMonthsGrid(theme, effectiveDayStyle, locale)
+          else if (_currentView == _CalendarView.years)
+            _buildYearsGrid(theme, effectiveDayStyle),
         ],
       ),
     );
+  }
+
+  Widget _buildHeader(TextStyle headerStyle, String? locale) {
+    if (!widget.selectDate) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: _previousMonth,
+          ),
+          BitText(
+            '${_getMonthName(_displayedMonth.month, locale)} ${_displayedMonth.year}',
+            style: headerStyle,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _nextMonth,
+          ),
+        ],
+      );
+    }
+
+    switch (_currentView) {
+      case _CalendarView.days:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: _previousMonth,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _currentView = _CalendarView.months;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.keyboard_arrow_down, size: 20),
+                        const SizedBox(width: 4),
+                        BitText(
+                          _getMonthName(_displayedMonth.month, locale),
+                          style: headerStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _currentView = _CalendarView.years;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.keyboard_arrow_down, size: 20),
+                        const SizedBox(width: 4),
+                        BitText(
+                          '${_displayedMonth.year}',
+                          style: headerStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: _nextMonth,
+            ),
+          ],
+        );
+      case _CalendarView.months:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: _previousYear,
+            ),
+            BitText(
+              '${_displayedMonth.year}',
+              style: headerStyle,
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: _nextYear,
+            ),
+          ],
+        );
+      case _CalendarView.years:
+        final currentDecadeStart = (_displayedMonth.year ~/ 10) * 10;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () {
+                setState(() {
+                  _displayedMonth = DateTime(_displayedMonth.year - 10, _displayedMonth.month);
+                });
+              },
+            ),
+            BitText(
+              '$currentDecadeStart - ${currentDecadeStart + 9}',
+              style: headerStyle,
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: () {
+                setState(() {
+                  _displayedMonth = DateTime(_displayedMonth.year + 10, _displayedMonth.month);
+                });
+              },
+            ),
+          ],
+        );
+    }
   }
 
   Widget _buildWeekdayHeaders(TextStyle style, String? locale) {
@@ -654,6 +860,106 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
     final date = DateTime(2024, month, 1);
     return DateFormat('MMMM', locale).format(date);
   }
+
+  Widget _buildMonthsGrid(BitTheme theme, TextStyle style, String? locale) {
+    final months = List.generate(12, (index) {
+      final date = DateTime(2024, index + 1, 1);
+      final fullName = DateFormat('MMMM', locale).format(date);
+      return fullName.substring(0, fullName.length >= 3 ? 3 : fullName.length);
+    });
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 2.5,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        final isSelected = _displayedMonth.month == index + 1;
+        final isCurrentMonth = DateTime.now().month == index + 1 &&
+            DateTime.now().year == _displayedMonth.year;
+
+        return InkWell(
+          onTap: () => _handleMonthSelected(index + 1),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? theme.primaryColor
+                  : isCurrentMonth
+                  ? theme.primaryColor.withValues(alpha: 0.2)
+                  : null,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: BitText(
+                months[index],
+                style: style.copyWith(
+                  color: isSelected
+                      ? theme.onPrimaryColor
+                      : theme.onBackrgroundColor,
+                  fontWeight: isSelected ? FontWeight.w600 : null,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildYearsGrid(BitTheme theme, TextStyle style) {
+    final currentYear = DateTime.now().year;
+    final centerYear = _displayedMonth.year;
+    final startYear = (centerYear ~/ 10) * 10 - 1;
+    
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: 21,
+        itemBuilder: (context, index) {
+          final year = startYear + index;
+          final isSelected = _displayedMonth.year == year;
+          final isCurrentYear = currentYear == year;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: InkWell(
+              onTap: () => _handleYearSelected(year),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.primaryColor
+                      : isCurrentYear
+                      ? theme.primaryColor.withValues(alpha: 0.2)
+                      : null,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: BitText(
+                    '$year',
+                    style: style.copyWith(
+                      color: isSelected
+                          ? theme.onPrimaryColor
+                          : theme.onBackrgroundColor,
+                      fontWeight: isSelected || isCurrentYear ? FontWeight.w600 : null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _BitDateRangeCalendar extends StatefulWidget {
@@ -668,6 +974,7 @@ class _BitDateRangeCalendar extends StatefulWidget {
   final TextStyle? weekdayStyle;
   final TextStyle? headerStyle;
   final String confirmButtonText;
+  final bool selectDate;
 
   const _BitDateRangeCalendar({
     required this.rangeStart,
@@ -681,6 +988,7 @@ class _BitDateRangeCalendar extends StatefulWidget {
     this.weekdayStyle,
     this.headerStyle,
     required this.confirmButtonText,
+    this.selectDate = false,
   });
 
   @override
@@ -691,6 +999,7 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
   late DateTime _displayedMonth;
   DateTime? _tempRangeStart;
   DateTime? _tempRangeEnd;
+  _CalendarView _currentView = _CalendarView.days;
 
   @override
   void initState() {
@@ -715,6 +1024,38 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
         _displayedMonth.year,
         _displayedMonth.month + 1,
       );
+    });
+  }
+
+  void _previousYear() {
+    setState(() {
+      _displayedMonth = DateTime(
+        _displayedMonth.year - 1,
+        _displayedMonth.month,
+      );
+    });
+  }
+
+  void _nextYear() {
+    setState(() {
+      _displayedMonth = DateTime(
+        _displayedMonth.year + 1,
+        _displayedMonth.month,
+      );
+    });
+  }
+
+  void _handleMonthSelected(int month) {
+    setState(() {
+      _displayedMonth = DateTime(_displayedMonth.year, month);
+      _currentView = _CalendarView.days;
+    });
+  }
+
+  void _handleYearSelected(int year) {
+    setState(() {
+      _displayedMonth = DateTime(year, _displayedMonth.month);
+      _currentView = _CalendarView.days;
     });
   }
 
@@ -768,32 +1109,21 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left),
-                      onPressed: _previousMonth,
-                    ),
-                    BitText(
-                      '${_getMonthName(_displayedMonth.month, locale)} ${_displayedMonth.year}',
-                      style: effectiveHeaderStyle,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: _nextMonth,
-                    ),
-                  ],
+                child: _buildHeader(effectiveHeaderStyle, locale),
+              ),
+              if (_currentView == _CalendarView.days) ...[
+                _buildWeekdayHeaders(effectiveWeekdayStyle, locale),
+                const SizedBox(height: 8),
+                _buildCalendarGrid(
+                  theme,
+                  effectiveSelectedColor,
+                  effectiveTodayColor,
+                  effectiveDayStyle,
                 ),
-              ),
-              _buildWeekdayHeaders(effectiveWeekdayStyle, locale),
-              const SizedBox(height: 8),
-              _buildCalendarGrid(
-                theme,
-                effectiveSelectedColor,
-                effectiveTodayColor,
-                effectiveDayStyle,
-              ),
+              ] else if (_currentView == _CalendarView.months)
+                _buildMonthsGrid(theme, effectiveDayStyle, locale)
+              else if (_currentView == _CalendarView.years)
+                _buildYearsGrid(theme, effectiveDayStyle),
             ],
           ),
         ),
@@ -956,5 +1286,239 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
   String _getMonthName(int month, String? locale) {
     final date = DateTime(2024, month, 1);
     return DateFormat('MMMM', locale).format(date);
+  }
+
+  Widget _buildHeader(TextStyle headerStyle, String? locale) {
+    if (!widget.selectDate) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: _previousMonth,
+          ),
+          BitText(
+            '${_getMonthName(_displayedMonth.month, locale)} ${_displayedMonth.year}',
+            style: headerStyle,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _nextMonth,
+          ),
+        ],
+      );
+    }
+
+    switch (_currentView) {
+      case _CalendarView.days:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: _previousMonth,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _currentView = _CalendarView.months;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.keyboard_arrow_down, size: 20),
+                        const SizedBox(width: 4),
+                        BitText(
+                          _getMonthName(_displayedMonth.month, locale),
+                          style: headerStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _currentView = _CalendarView.years;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.keyboard_arrow_down, size: 20),
+                        const SizedBox(width: 4),
+                        BitText(
+                          '${_displayedMonth.year}',
+                          style: headerStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: _nextMonth,
+            ),
+          ],
+        );
+      case _CalendarView.months:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: _previousYear,
+            ),
+            BitText(
+              '${_displayedMonth.year}',
+              style: headerStyle,
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: _nextYear,
+            ),
+          ],
+        );
+      case _CalendarView.years:
+        final currentDecadeStart = (_displayedMonth.year ~/ 10) * 10;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () {
+                setState(() {
+                  _displayedMonth = DateTime(_displayedMonth.year - 10, _displayedMonth.month);
+                });
+              },
+            ),
+            BitText(
+              '$currentDecadeStart - ${currentDecadeStart + 9}',
+              style: headerStyle,
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: () {
+                setState(() {
+                  _displayedMonth = DateTime(_displayedMonth.year + 10, _displayedMonth.month);
+                });
+              },
+            ),
+          ],
+        );
+    }
+  }
+
+  Widget _buildMonthsGrid(BitTheme theme, TextStyle style, String? locale) {
+    final months = List.generate(12, (index) {
+      final date = DateTime(2024, index + 1, 1);
+      final fullName = DateFormat('MMMM', locale).format(date);
+      return fullName.substring(0, fullName.length >= 3 ? 3 : fullName.length);
+    });
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 2.5,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        final isSelected = _displayedMonth.month == index + 1;
+        final isCurrentMonth = DateTime.now().month == index + 1 &&
+            DateTime.now().year == _displayedMonth.year;
+
+        return InkWell(
+          onTap: () => _handleMonthSelected(index + 1),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? theme.primaryColor
+                  : isCurrentMonth
+                  ? theme.primaryColor.withValues(alpha: 0.2)
+                  : null,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: BitText(
+                months[index],
+                style: style.copyWith(
+                  color: isSelected
+                      ? theme.onPrimaryColor
+                      : theme.onBackrgroundColor,
+                  fontWeight: isSelected ? FontWeight.w600 : null,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildYearsGrid(BitTheme theme, TextStyle style) {
+    final currentYear = DateTime.now().year;
+    final centerYear = _displayedMonth.year;
+    final startYear = (centerYear ~/ 10) * 10 - 1;
+    
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: 21,
+        itemBuilder: (context, index) {
+          final year = startYear + index;
+          final isSelected = _displayedMonth.year == year;
+          final isCurrentYear = currentYear == year;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: InkWell(
+              onTap: () => _handleYearSelected(year),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.primaryColor
+                      : isCurrentYear
+                      ? theme.primaryColor.withValues(alpha: 0.2)
+                      : null,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: BitText(
+                    '$year',
+                    style: style.copyWith(
+                      color: isSelected
+                          ? theme.onPrimaryColor
+                          : theme.onBackrgroundColor,
+                      fontWeight: isSelected || isCurrentYear ? FontWeight.w600 : null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }
