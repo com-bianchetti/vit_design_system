@@ -262,8 +262,8 @@ class _BitBadgeState extends State<BitBadge> {
             : switch (visualDensity) {
                 VisualDensity.comfortable =>
                   controller.count > 0 || controller.icon != null
-                      ? theme.values.badgeCountConfortablePadding
-                      : theme.values.badgeConfortablePadding,
+                      ? theme.values.badgeCountComfortablePadding
+                      : theme.values.badgeComfortablePadding,
                 VisualDensity.compact =>
                   controller.count > 0 || controller.icon != null
                       ? theme.values.badgeCountCompactPadding

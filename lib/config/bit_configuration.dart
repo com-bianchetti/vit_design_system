@@ -1,3 +1,6 @@
+import 'package:bit_design_system/config/bit_types.dart';
+import 'package:flutter/material.dart';
+
 class BitConfiguration {
   final bool showSwitchItemBorder;
   final bool showSwitchItemBackground;
@@ -5,6 +8,10 @@ class BitConfiguration {
   final bool showCheckboxItemBackground;
   final bool showRadioItemBorder;
   final bool showRadioItemBackground;
+  final bool showInputBorder;
+  final bool showInputBackground;
+  final BitInputMode inputMode;
+  final TextStyle? inputLabelStyle;
 
   const BitConfiguration({
     this.showSwitchItemBorder = true,
@@ -13,5 +20,9 @@ class BitConfiguration {
     this.showCheckboxItemBackground = true,
     this.showRadioItemBorder = true,
     this.showRadioItemBackground = true,
+    this.showInputBorder = true,
+    this.showInputBackground = true,
+    this.inputMode = BitInputMode.floatingLabel,
+    this.inputLabelStyle,
   });
 }

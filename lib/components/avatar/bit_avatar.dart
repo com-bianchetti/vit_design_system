@@ -209,7 +209,7 @@ class _BitAvatarState extends State<BitAvatar> {
     final defaultRadius = switch (visualDensity) {
       VisualDensity.compact => theme.values.avatarCompactRadius,
       VisualDensity.standard => theme.values.avatarStandardRadius,
-      VisualDensity.comfortable => theme.values.avatarConfortableRadius,
+      VisualDensity.comfortable => theme.values.avatarComfortableRadius,
       _ => theme.values.avatarStandardRadius,
     };
 

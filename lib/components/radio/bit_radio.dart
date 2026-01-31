@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -255,15 +257,11 @@ class BitRadio<T> extends StatelessWidget {
       style: visualDensity == VisualDensity.compact
           ? theme.bodySmall.copyWith(
               fontWeight: titleStyle == null ? FontWeight.bold : null,
-              color: enabled
-                  ? theme.onBackrgroundColor
-                  : theme.disabledColor,
+              color: enabled ? theme.onBackrgroundColor : theme.disabledColor,
             )
           : theme.body.copyWith(
               fontWeight: titleStyle == null ? FontWeight.bold : null,
-              color: enabled
-                  ? theme.onBackrgroundColor
-                  : theme.disabledColor,
+              color: enabled ? theme.onBackrgroundColor : theme.disabledColor,
             ),
     );
 
@@ -302,9 +300,7 @@ class BitRadio<T> extends StatelessWidget {
             visualDensity: visualDensity,
             dense: visualDensity == VisualDensity.compact,
             enabled: enabled,
-            onTap: onChanged != null
-                ? () => onChanged!(value)
-                : null,
+            onTap: onChanged != null ? () => onChanged!(value) : null,
           ),
         ),
       ),
@@ -460,7 +456,7 @@ class _BitRadioGroupState<T> extends State<BitRadioGroup<T>> {
       children: widget.options.asMap().entries.map((entry) {
         final index = entry.key;
         final option = entry.value;
-        
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [

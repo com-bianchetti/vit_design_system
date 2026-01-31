@@ -394,7 +394,7 @@ class BitPopover extends StatelessWidget {
     bool fixedHeader = true,
     bool fixedFooter = true,
     bool adaptiveLayout = true,
-    double borderRadius = 25,
+    double? borderRadius,
   }) async {
     final screenWidth = MediaQuery.sizeOf(context).width;
     return showModalBottomSheet(
@@ -413,12 +413,14 @@ class BitPopover extends StatelessWidget {
         margin: EdgeInsets.symmetric(
           vertical: 20,
           horizontal: screenWidth < 600
-              ? 20
+              ? 15
               : MediaQuery.sizeOf(context).width * 0.2,
         ),
         decoration: BoxDecoration(
           color: context.theme.backgroundColor,
-          borderRadius: BorderRadius.circular(borderRadius),
+          borderRadius: BorderRadius.circular(
+            borderRadius ?? context.theme.values.popoverBorderRadius,
+          ),
         ),
         child: BitSheet(
           header: header,
@@ -439,8 +441,12 @@ class BitPopover extends StatelessWidget {
           footerPadding: footerPadding,
           fixedFooter: fixedFooter,
           headerBorderRadius: BorderRadius.only(
-            topLeft: Radius.circular(borderRadius),
-            topRight: Radius.circular(borderRadius),
+            topLeft: Radius.circular(
+              borderRadius ?? context.theme.values.popoverBorderRadius,
+            ),
+            topRight: Radius.circular(
+              borderRadius ?? context.theme.values.popoverBorderRadius,
+            ),
           ),
         ),
       ),

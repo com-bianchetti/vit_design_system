@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:bit_design_system/components/radio/bit_radio.dart';
 import 'package:bit_design_system/config/bit_theme.dart';
 import 'package:bit_design_system/bit_app.dart';
