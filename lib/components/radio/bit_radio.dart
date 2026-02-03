@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -185,6 +186,12 @@ class BitRadio<T> extends StatelessWidget {
   /// Whether the radio is enabled.
   final bool enabled;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the radio's value in the form data map.
+  final String? id;
+
   /// Creates a [BitRadio].
   ///
   /// The [value] parameter is required.
@@ -210,6 +217,7 @@ class BitRadio<T> extends StatelessWidget {
     this.icon,
     this.iconColor,
     this.enabled = true,
+    this.id,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -240,6 +248,25 @@ class BitRadio<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
+    final radio = _buildRadioWidget(context, theme);
+
+    if (id != null) {
+      return FormField<T>(
+        initialValue: groupValue,
+        onSaved: (savedValue) {
+          final form = BitFormProvider.maybeOf(context);
+          if (savedValue == value) {
+            form?.save(id!, value);
+          }
+        },
+        builder: (field) => radio,
+      );
+    }
+
+    return radio;
+  }
+
+  Widget _buildRadioWidget(BuildContext context, theme) {
     if (title == null) {
       return _buildRadio(context);
     }
@@ -404,6 +431,17 @@ class BitRadioGroup<T> extends StatefulWidget {
   /// Defaults to 8 logical pixels.
   final double spacing;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the selected radio value in the form data map.
+  final String? id;
+
+  /// Validator for the radio group.
+  ///
+  /// If provided, the validator will be called when the radio group is saved.
+  final FormFieldValidator<T>? validator;
+
   /// Creates a [BitRadioGroup].
   ///
   /// The [options] parameter is required and must contain at least one option.
@@ -426,6 +464,8 @@ class BitRadioGroup<T> extends StatefulWidget {
       vertical: 12,
     ),
     this.spacing = 8,
+    this.id,
+    this.validator,
   });
 
   @override
@@ -451,7 +491,7 @@ class _BitRadioGroupState<T> extends State<BitRadioGroup<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final radios = Column(
       mainAxisSize: MainAxisSize.min,
       children: widget.options.asMap().entries.map((entry) {
         final index = entry.key;
@@ -496,6 +536,46 @@ class _BitRadioGroupState<T> extends State<BitRadioGroup<T>> {
         );
       }).toList(),
     );
+
+    if (widget.id != null) {
+      return FormField<T>(
+        initialValue: _groupValue,
+        validator: (value) => widget.validator?.call(_groupValue),
+        onSaved: (value) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, _groupValue);
+        },
+        builder: (field) {
+          if (widget.validator == null) {
+            return radios;
+          }
+
+          final hasError =
+              field.errorText != null && field.errorText!.isNotEmpty;
+          final theme = context.theme;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              radios,
+              if (hasError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: BitText(
+                    field.errorText!,
+                    style: theme.bodySmall.copyWith(
+                      color: theme.errorColor,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+    }
+
+    return radios;
   }
 }
 

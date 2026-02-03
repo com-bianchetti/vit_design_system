@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bit_design_system/components/button/bit_button.dart';
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/components/popover/bit_popover.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
@@ -8,6 +9,38 @@ import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+class BitDateData {
+  final DateTime? date;
+  final DateTime? start;
+  final DateTime? end;
+
+  const BitDateData({
+    this.date,
+    this.start,
+    this.end,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BitDateData &&
+          runtimeType == other.runtimeType &&
+          date == other.date &&
+          start == other.start &&
+          end == other.end;
+
+  @override
+  int get hashCode => Object.hash(date, start, end);
+
+  @override
+  String toString() {
+    if (date != null) {
+      return 'BitDateData(date: $date)';
+    }
+    return 'BitDateData(start: $start, end: $end)';
+  }
+}
 
 /// A customizable date picker widget that provides consistent styling.
 ///
@@ -148,7 +181,7 @@ class BitDate extends StatefulWidget {
   final Widget? leading;
   final ValueChanged<DateTime?>? onChanged;
   final void Function(DateTime? start, DateTime? end)? onRangeChanged;
-  final FormFieldValidator<String>? validator;
+  final FormFieldValidator<BitDateData>? validator;
   final bool enabled;
   final TextStyle? style;
   final TextStyle? labelStyle;
@@ -182,7 +215,7 @@ class BitDate extends StatefulWidget {
   final TextStyle? dayStyle;
   final TextStyle? weekdayStyle;
   final TextStyle? headerStyle;
-  
+
   /// Whether to enable month and year selection in the calendar header.
   ///
   /// When true, the calendar header displays dropdown icons next to the month
@@ -198,6 +231,12 @@ class BitDate extends StatefulWidget {
   /// )
   /// ```
   final bool selectDate;
+
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the date or date range in the form data map.
+  final String? id;
 
   const BitDate({
     super.key,
@@ -245,6 +284,7 @@ class BitDate extends StatefulWidget {
     this.weekdayStyle,
     this.headerStyle,
     this.selectDate = false,
+    this.id,
   });
 
   @override
@@ -413,9 +453,29 @@ class _BitDateState extends State<BitDate> {
     );
   }
 
+  BitDateData _buildDateData() {
+    if (widget.rangeSelection) {
+      return BitDateData(
+        start: _rangeStartDate,
+        end: _rangeEndDate,
+      );
+    } else {
+      return BitDateData(
+        date: _selectedDate,
+      );
+    }
+  }
+
+  String? _validateDate(String? _) {
+    if (widget.validator != null) {
+      return widget.validator!(_buildDateData());
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BitInput(
+    final input = BitInput(
       controller: _displayController,
       label: widget.label,
       hintText: widget.hintText,
@@ -447,9 +507,39 @@ class _BitDateState extends State<BitDate> {
       inputMode: widget.inputMode,
       inputLabelStyle: widget.inputLabelStyle,
       visualDensity: widget.visualDensity,
-      validator: widget.validator,
+      validator: _validateDate,
       onTap: _showCalendar,
     );
+
+    if (widget.id != null) {
+      if (widget.rangeSelection) {
+        return FormField<Map<String, DateTime?>>(
+          initialValue: {
+            'start': _rangeStartDate,
+            'end': _rangeEndDate,
+          },
+          onSaved: (value) {
+            final form = BitFormProvider.maybeOf(context);
+            form?.save(widget.id!, {
+              'start': _rangeStartDate,
+              'end': _rangeEndDate,
+            });
+          },
+          builder: (field) => input,
+        );
+      } else {
+        return FormField<DateTime>(
+          initialValue: _selectedDate,
+          onSaved: (value) {
+            final form = BitFormProvider.maybeOf(context);
+            form?.save(widget.id!, _selectedDate);
+          },
+          builder: (field) => input,
+        );
+      }
+    }
+
+    return input;
   }
 }
 
@@ -634,7 +724,10 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -657,7 +750,10 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -706,7 +802,10 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
               icon: const Icon(Icons.chevron_left),
               onPressed: () {
                 setState(() {
-                  _displayedMonth = DateTime(_displayedMonth.year - 10, _displayedMonth.month);
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year - 10,
+                    _displayedMonth.month,
+                  );
                 });
               },
             ),
@@ -718,7 +817,10 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
               icon: const Icon(Icons.chevron_right),
               onPressed: () {
                 setState(() {
-                  _displayedMonth = DateTime(_displayedMonth.year + 10, _displayedMonth.month);
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year + 10,
+                    _displayedMonth.month,
+                  );
                 });
               },
             ),
@@ -880,7 +982,8 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
       itemCount: 12,
       itemBuilder: (context, index) {
         final isSelected = _displayedMonth.month == index + 1;
-        final isCurrentMonth = DateTime.now().month == index + 1 &&
+        final isCurrentMonth =
+            DateTime.now().month == index + 1 &&
             DateTime.now().year == _displayedMonth.year;
 
         return InkWell(
@@ -916,7 +1019,7 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
     final currentYear = DateTime.now().year;
     final centerYear = _displayedMonth.year;
     final startYear = (centerYear ~/ 10) * 10 - 1;
-    
+
     return SizedBox(
       height: 250,
       child: ListView.builder(
@@ -949,7 +1052,9 @@ class _BitDateCalendarState extends State<_BitDateCalendar> {
                       color: isSelected
                           ? theme.onPrimaryColor
                           : theme.onBackrgroundColor,
-                      fontWeight: isSelected || isCurrentYear ? FontWeight.w600 : null,
+                      fontWeight: isSelected || isCurrentYear
+                          ? FontWeight.w600
+                          : null,
                     ),
                   ),
                 ),
@@ -1329,7 +1434,10 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -1352,7 +1460,10 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -1401,7 +1512,10 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
               icon: const Icon(Icons.chevron_left),
               onPressed: () {
                 setState(() {
-                  _displayedMonth = DateTime(_displayedMonth.year - 10, _displayedMonth.month);
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year - 10,
+                    _displayedMonth.month,
+                  );
                 });
               },
             ),
@@ -1413,7 +1527,10 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
               icon: const Icon(Icons.chevron_right),
               onPressed: () {
                 setState(() {
-                  _displayedMonth = DateTime(_displayedMonth.year + 10, _displayedMonth.month);
+                  _displayedMonth = DateTime(
+                    _displayedMonth.year + 10,
+                    _displayedMonth.month,
+                  );
                 });
               },
             ),
@@ -1441,7 +1558,8 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
       itemCount: 12,
       itemBuilder: (context, index) {
         final isSelected = _displayedMonth.month == index + 1;
-        final isCurrentMonth = DateTime.now().month == index + 1 &&
+        final isCurrentMonth =
+            DateTime.now().month == index + 1 &&
             DateTime.now().year == _displayedMonth.year;
 
         return InkWell(
@@ -1477,7 +1595,7 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
     final currentYear = DateTime.now().year;
     final centerYear = _displayedMonth.year;
     final startYear = (centerYear ~/ 10) * 10 - 1;
-    
+
     return SizedBox(
       height: 250,
       child: ListView.builder(
@@ -1510,7 +1628,9 @@ class _BitDateRangeCalendarState extends State<_BitDateRangeCalendar> {
                       color: isSelected
                           ? theme.onPrimaryColor
                           : theme.onBackrgroundColor,
-                      fontWeight: isSelected || isCurrentYear ? FontWeight.w600 : null,
+                      fontWeight: isSelected || isCurrentYear
+                          ? FontWeight.w600
+                          : null,
                     ),
                   ),
                 ),

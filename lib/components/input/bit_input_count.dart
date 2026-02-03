@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
@@ -70,7 +71,10 @@ import 'package:flutter/services.dart';
 /// - Use [label] to add a floating or fixed label
 class BitInputCount extends StatefulWidget {
   /// The current value of the input.
-  final int value;
+  ///
+  /// When null, the component manages its own state internally.
+  /// When provided, the component is controlled from outside.
+  final int? value;
 
   /// Callback function invoked when the value changes.
   final ValueChanged<int>? onChanged;
@@ -162,6 +166,12 @@ class BitInputCount extends StatefulWidget {
   /// Semantic label for accessibility.
   final String? semanticLabel;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the input's value in the form data map.
+  final String? id;
+
   /// The input mode.
   ///
   /// If null, uses the theme's input mode.
@@ -175,13 +185,17 @@ class BitInputCount extends StatefulWidget {
   /// Only applies when [inputMode] is [BitInputMode.fixedLabel].
   final TextStyle? inputLabelStyle;
 
+  /// Validator function for form validation.
+  ///
+  /// Returns an error message if validation fails, or null if valid.
+  final FormFieldValidator<int>? validator;
+
   /// Creates a [BitInputCount].
   ///
-  /// The [value] parameter is required.
-  /// All other parameters are optional and have sensible defaults.
+  /// All parameters are optional and have sensible defaults.
   const BitInputCount({
     super.key,
-    required this.value,
+    this.value,
     this.onChanged,
     this.label,
     this.allowNegative = true,
@@ -206,8 +220,10 @@ class BitInputCount extends StatefulWidget {
     this.iconColor,
     this.textAlign = TextAlign.center,
     this.semanticLabel,
+    this.id,
     this.inputMode,
     this.inputLabelStyle,
+    this.validator,
   });
 
   @override
@@ -216,18 +232,21 @@ class BitInputCount extends StatefulWidget {
 
 class _BitInputCountState extends State<BitInputCount> {
   late TextEditingController _controller;
+  int _value = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.value.toString());
+    _value = widget.value ?? 0;
+    _controller = TextEditingController(text: _value.toString());
   }
 
   @override
   void didUpdateWidget(BitInputCount oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.value != oldWidget.value) {
-      _controller.text = widget.value.toString();
+    if (widget.value != oldWidget.value && widget.value != null) {
+      _value = widget.value!;
+      _controller.text = _value.toString();
     }
   }
 
@@ -235,6 +254,10 @@ class _BitInputCountState extends State<BitInputCount> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  int get _effectiveValue {
+    return _value;
   }
 
   int get _effectiveMinValue {
@@ -249,38 +272,50 @@ class _BitInputCountState extends State<BitInputCount> {
   }
 
   bool get _canDecrement {
-    return widget.enabled && widget.value > _effectiveMinValue;
+    return widget.enabled && _effectiveValue > _effectiveMinValue;
   }
 
   bool get _canIncrement {
-    return widget.enabled && widget.value < _effectiveMaxValue;
+    return widget.enabled && _effectiveValue < _effectiveMaxValue;
   }
 
   void _increment() {
     if (!_canIncrement) return;
 
-    final newValue = (widget.value + widget.step).clamp(
+    final newValue = (_effectiveValue + widget.step).clamp(
       _effectiveMinValue,
       _effectiveMaxValue,
     );
 
-    if (newValue != widget.value) {
+    if (newValue != _effectiveValue) {
       _controller.text = newValue.toString();
-      widget.onChanged?.call(newValue);
+      if (widget.onChanged != null) {
+        widget.onChanged!(newValue);
+      } else {
+        setState(() {
+          _value = newValue;
+        });
+      }
     }
   }
 
   void _decrement() {
     if (!_canDecrement) return;
 
-    final newValue = (widget.value - widget.step).clamp(
+    final newValue = (_effectiveValue - widget.step).clamp(
       _effectiveMinValue,
       _effectiveMaxValue,
     );
 
-    if (newValue != widget.value) {
+    if (newValue != _effectiveValue) {
       _controller.text = newValue.toString();
-      widget.onChanged?.call(newValue);
+      if (widget.onChanged != null) {
+        widget.onChanged!(newValue);
+      } else {
+        setState(() {
+          _value = newValue;
+        });
+      }
     }
   }
 
@@ -289,7 +324,7 @@ class _BitInputCountState extends State<BitInputCount> {
 
     final newValue = int.tryParse(text);
     if (newValue == null) {
-      _controller.text = widget.value.toString();
+      _controller.text = _effectiveValue.toString();
       return;
     }
 
@@ -298,8 +333,14 @@ class _BitInputCountState extends State<BitInputCount> {
       _effectiveMaxValue,
     );
 
-    if (clampedValue != widget.value) {
-      widget.onChanged?.call(clampedValue);
+    if (clampedValue != _effectiveValue) {
+      if (widget.onChanged != null) {
+        widget.onChanged!(clampedValue);
+      } else {
+        setState(() {
+          _value = clampedValue;
+        });
+      }
     }
 
     if (clampedValue != newValue) {
@@ -315,7 +356,7 @@ class _BitInputCountState extends State<BitInputCount> {
     final theme = context.theme;
     final effectiveIconColor = widget.iconColor ?? theme.primaryColor;
 
-    return BitInput(
+    final bitInput = BitInput(
       controller: _controller,
       label: widget.label,
       enabled: widget.enabled,
@@ -336,6 +377,7 @@ class _BitInputCountState extends State<BitInputCount> {
       semanticLabel: widget.semanticLabel,
       inputMode: widget.inputMode,
       inputLabelStyle: widget.inputLabelStyle,
+      validator: (value) => widget.validator?.call(int.tryParse(value ?? '')),
       leading: IconButton(
         icon: Icon(
           widget.decrementIcon,
@@ -355,5 +397,19 @@ class _BitInputCountState extends State<BitInputCount> {
         padding: EdgeInsets.zero,
       ),
     );
+
+    if (widget.id != null) {
+      return FormField<int>(
+        initialValue: _effectiveValue,
+        validator: widget.validator,
+        onSaved: (value) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, _effectiveValue);
+        },
+        builder: (field) => bitInput,
+      );
+    }
+
+    return bitInput;
   }
 }

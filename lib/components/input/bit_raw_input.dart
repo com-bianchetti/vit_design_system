@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -167,6 +168,12 @@ class BitRawInput extends StatefulWidget {
   /// Semantic label for accessibility.
   final String? semanticLabel;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the input's value in the form data map.
+  final String? id;
+
   final VisualDensity? visualDensity;
 
   /// Creates a [BitRawInput].
@@ -208,6 +215,7 @@ class BitRawInput extends StatefulWidget {
     this.cursorHeight,
     this.cursorRadius,
     this.semanticLabel,
+    this.id,
     this.visualDensity,
   });
 
@@ -216,6 +224,36 @@ class BitRawInput extends StatefulWidget {
 }
 
 class _BitRawInputState extends State<BitRawInput> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _registerWithForm();
+  }
+
+  void _registerWithForm() {
+    final form = BitFormProvider.maybeOf(context);
+    final pageIndex = BitFormPageScope.of(context);
+    if (form != null && pageIndex != null && widget.id != null) {
+      form.registerFocus(_focusNode, pageIndex);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
@@ -283,13 +321,19 @@ class _BitRawInputState extends State<BitRawInput> {
       autofocus: widget.autofocus,
       textAlign: widget.textAlign,
       inputFormatters: widget.inputFormatters,
-      focusNode: widget.focusNode,
+      focusNode: _focusNode,
       textInputAction: widget.textInputAction,
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onSubmitted,
       onEditingComplete: widget.onEditingComplete,
       onTap: widget.onTap,
       validator: widget.validator,
+      onSaved: (value) {
+        if (widget.id != null) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, value ?? '');
+        }
+      },
       enableSuggestions: widget.enableSuggestions,
       autocorrect: widget.autocorrect,
       cursorColor: effectiveCursorColor,

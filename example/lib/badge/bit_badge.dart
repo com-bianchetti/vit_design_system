@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:bit_design_system/bit_design_system.dart';
-import 'package:bit_design_system/components/badge/bit_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 

@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
@@ -229,6 +230,12 @@ class BitInput extends StatefulWidget {
   /// Semantic label for accessibility.
   final String? semanticLabel;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the input's value in the form data map.
+  final String? id;
+
   /// The input mode.
   ///
   /// If null, uses the theme's input mode.
@@ -300,6 +307,7 @@ class BitInput extends StatefulWidget {
     this.cursorHeight,
     this.cursorRadius,
     this.semanticLabel,
+    this.id,
     this.inputMode,
     this.inputLabelStyle,
     this.visualDensity,
@@ -319,6 +327,20 @@ class _BitInputState extends State<BitInput> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _registerWithForm();
+  }
+
+  void _registerWithForm() {
+    final form = BitFormProvider.maybeOf(context);
+    final pageIndex = BitFormPageScope.of(context);
+    if (form != null && pageIndex != null && widget.id != null) {
+      form.registerFocus(_focusNode, pageIndex);
+    }
   }
 
   @override
@@ -524,6 +546,12 @@ class _BitInputState extends State<BitInput> {
       onEditingComplete: widget.onEditingComplete,
       onTap: widget.onTap,
       validator: widget.validator,
+      onSaved: (value) {
+        if (widget.id != null) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, value ?? '');
+        }
+      },
       enableSuggestions: widget.enableSuggestions,
       autocorrect: widget.autocorrect,
       cursorColor: effectiveCursorColor,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bit_design_system/components/button/bit_button.dart';
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/components/popover/bit_popover.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
@@ -336,6 +337,12 @@ class BitSelect extends StatefulWidget {
   /// Defaults to ', '.
   final String multiValueSeparator;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the select's value(s) in the form data map.
+  final String? id;
+
   /// Creates a [BitSelect].
   ///
   /// The [options] parameter is required. All other parameters are optional
@@ -387,6 +394,7 @@ class BitSelect extends StatefulWidget {
     this.multiSelection = false,
     this.confirmButtonText,
     this.multiValueSeparator = ', ',
+    this.id,
   });
 
   @override
@@ -510,7 +518,7 @@ class _BitSelectState extends State<BitSelect> {
 
   @override
   Widget build(BuildContext context) {
-    return BitInput(
+    final input = BitInput(
       controller: _displayController,
       label: widget.label,
       hintText: widget.hintText,
@@ -545,6 +553,30 @@ class _BitSelectState extends State<BitSelect> {
       validator: widget.validator,
       onTap: _showOptions,
     );
+
+    if (widget.id != null) {
+      if (widget.multiSelection) {
+        return FormField<List<String>>(
+          initialValue: _selectedValues,
+          onSaved: (value) {
+            final form = BitFormProvider.maybeOf(context);
+            form?.save(widget.id!, _selectedValues);
+          },
+          builder: (field) => input,
+        );
+      } else {
+        return FormField<String>(
+          initialValue: _selectedValue,
+          onSaved: (value) {
+            final form = BitFormProvider.maybeOf(context);
+            form?.save(widget.id!, _selectedValue);
+          },
+          builder: (field) => input,
+        );
+      }
+    }
+
+    return input;
   }
 }
 

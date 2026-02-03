@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
@@ -162,6 +163,12 @@ class BitSwitch extends StatefulWidget {
   /// Whether the switch is enabled.
   final bool enabled;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the switch's value in the form data map.
+  final String? id;
+
   /// Creates a [BitSwitch].
   ///
   /// The [value] parameter is required.
@@ -187,6 +194,7 @@ class BitSwitch extends StatefulWidget {
     this.icon,
     this.iconColor,
     this.enabled = true,
+    this.id,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -215,7 +223,7 @@ class _BitSwitchState extends State<BitSwitch> {
       hint: widget.hint,
       excludeSemantics: true,
       child: CupertinoSwitch(
-        value: widget.value ?? _value,
+        value: widget.onChanged != null ? widget.value ?? _value : _value,
         onChanged: widget.enabled
             ? (widget.onChanged ??
                   (value) {
@@ -235,6 +243,23 @@ class _BitSwitchState extends State<BitSwitch> {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
+    final switchWidget = _buildSwitchWidget(context, theme);
+
+    if (widget.id != null) {
+      return FormField<bool>(
+        initialValue: _value,
+        onSaved: (value) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, _value);
+        },
+        builder: (field) => switchWidget,
+      );
+    }
+
+    return switchWidget;
+  }
+
+  Widget _buildSwitchWidget(BuildContext context, theme) {
     if (widget.title == null) {
       return _buildSwitch(context);
     }

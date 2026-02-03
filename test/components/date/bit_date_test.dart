@@ -1,6 +1,7 @@
 import 'package:bit_design_system/bit_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   group('BitDate - Single Selection', () {
@@ -54,7 +55,12 @@ void main() {
       await tester.tap(find.byType(BitInput));
       await tester.pumpAndSettle();
 
-      expect(find.text('January 2026'), findsOneWidget);
+      expect(
+        find.text(
+          '${DateFormat('MMMM').format(DateTime.now())} ${DateTime.now().year}',
+        ),
+        findsOneWidget,
+      );
       expect(find.byIcon(Icons.chevron_left), findsOneWidget);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
@@ -173,17 +179,32 @@ void main() {
       await tester.tap(find.byType(BitInput));
       await tester.pumpAndSettle();
 
-      expect(find.text('January 2026'), findsOneWidget);
+      expect(
+        find.text(
+          '${DateFormat('MMMM').format(DateTime.now())} ${DateTime.now().year}',
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byIcon(Icons.chevron_right));
       await tester.pumpAndSettle();
 
-      expect(find.text('February 2026'), findsOneWidget);
+      expect(
+        find.text(
+          '${DateFormat('MMMM').format(DateTime.now().add(const Duration(days: 31)))} ${DateTime.now().year}',
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byIcon(Icons.chevron_left));
       await tester.pumpAndSettle();
 
-      expect(find.text('January 2026'), findsOneWidget);
+      expect(
+        find.text(
+          '${DateFormat('MMMM').format(DateTime.now())} ${DateTime.now().year}',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('selects date on tap', (tester) async {
@@ -211,7 +232,10 @@ void main() {
 
       expect(selectedDate, isNotNull);
       expect(selectedDate!.day, 15);
-      expect(find.text('Jan 15, 2026'), findsOneWidget);
+      expect(
+        find.text(DateFormat('MMM d, yyyy').format(selectedDate!)),
+        findsOneWidget,
+      );
     });
 
     testWidgets('works in controlled mode', (tester) async {
@@ -376,6 +400,122 @@ void main() {
       );
 
       expect(find.text('Jan 10, 2026 to Jan 20, 2026'), findsOneWidget);
+    });
+
+    testWidgets(
+      'validator receives BitDateData with date field for single selection',
+      (tester) async {
+        BitDateData? receivedData;
+
+        final formKey = GlobalKey<FormState>();
+        await tester.pumpWidget(
+          BitApp(
+            theme: BitTheme(),
+            home: Scaffold(
+              body: Form(
+                key: formKey,
+                child: BitDate(
+                  label: 'Birth Date',
+                  initialValue: DateTime(2026, 1, 15),
+                  validator: (data) {
+                    receivedData = data;
+                    if (data == null || data.date == null) {
+                      return 'Date is required';
+                    }
+                    if (data.date!.year < 1900) {
+                      return 'Date must be after 1900';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+
+        formKey.currentState!.validate();
+        await tester.pump();
+
+        expect(receivedData, isNotNull);
+        expect(receivedData!.date, isNotNull);
+        expect(receivedData!.date!.year, 2026);
+        expect(receivedData!.date!.month, 1);
+        expect(receivedData!.date!.day, 15);
+        expect(receivedData!.start, isNull);
+        expect(receivedData!.end, isNull);
+      },
+    );
+
+    testWidgets(
+      'validator receives BitDateData with start and end fields for range selection',
+      (tester) async {
+        BitDateData? receivedData;
+
+        final formKey = GlobalKey<FormState>();
+        await tester.pumpWidget(
+          BitApp(
+            theme: BitTheme(),
+            home: Scaffold(
+              body: Form(
+                key: formKey,
+                child: BitDate(
+                  label: 'Travel Dates',
+                  rangeSelection: true,
+                  initialRangeStart: DateTime(2026, 1, 10),
+                  initialRangeEnd: DateTime(2026, 1, 20),
+                  validator: (data) {
+                    receivedData = data;
+                    return null;
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+
+        formKey.currentState!.validate();
+        await tester.pump();
+
+        expect(receivedData, isNotNull);
+        expect(receivedData!.date, isNull);
+        expect(receivedData!.start, isNotNull);
+        expect(receivedData!.end, isNotNull);
+        expect(receivedData!.start!.year, 2026);
+        expect(receivedData!.start!.month, 1);
+        expect(receivedData!.start!.day, 10);
+        expect(receivedData!.end!.year, 2026);
+        expect(receivedData!.end!.month, 1);
+        expect(receivedData!.end!.day, 20);
+      },
+    );
+
+    testWidgets('validator can return error message', (tester) async {
+      final formKey = GlobalKey<FormState>();
+      await tester.pumpWidget(
+        BitApp(
+          theme: BitTheme(),
+          home: Scaffold(
+            body: Form(
+              key: formKey,
+              child: BitDate(
+                label: 'Birth Date',
+                validator: (data) {
+                  if (data == null || data.date == null) {
+                    return 'Date is required';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final isValid = formKey.currentState!.validate();
+      await tester.pump();
+
+      expect(isValid, false);
+      expect(find.text('Date is required'), findsOneWidget);
     });
   });
 }

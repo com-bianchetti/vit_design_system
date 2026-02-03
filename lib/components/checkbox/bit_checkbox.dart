@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -162,6 +163,17 @@ class BitCheckbox extends StatefulWidget {
   /// If true, the checkbox can have three states: checked, unchecked, and indeterminate (null).
   final bool tristate;
 
+  /// Unique identifier for form data collection.
+  ///
+  /// When used within a [BitForm], this id will be used as the key
+  /// to store the checkbox's value in the form data map.
+  final String? id;
+
+  /// Validator for the checkbox.
+  ///
+  /// If provided, the validator will be called when the checkbox is saved.
+  final FormFieldValidator<bool>? validator;
+
   /// Creates a [BitCheckbox].
   ///
   /// The [value] parameter is required.
@@ -187,6 +199,8 @@ class BitCheckbox extends StatefulWidget {
     this.iconColor,
     this.enabled = true,
     this.tristate = false,
+    this.id,
+    this.validator,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -215,7 +229,7 @@ class _BitCheckboxState extends State<BitCheckbox> {
       hint: widget.hint,
       excludeSemantics: true,
       child: Checkbox(
-        value: widget.value ?? _value,
+        value: widget.onChanged != null ? widget.value ?? _value : _value,
         onChanged: widget.enabled
             ? (widget.onChanged != null
                   ? (value) => widget.onChanged!(value ?? false)
@@ -236,6 +250,45 @@ class _BitCheckboxState extends State<BitCheckbox> {
   Widget build(BuildContext context) {
     final theme = context.theme;
 
+    final checkbox = _buildCheckboxWidget(context, theme);
+
+    if (widget.id != null) {
+      return FormField<bool>(
+        initialValue: _value,
+        validator: widget.validator,
+        onSaved: (value) {
+          final form = BitFormProvider.maybeOf(context);
+          form?.save(widget.id!, _value);
+        },
+        builder: (field) {
+          final hasError =
+              field.errorText != null && field.errorText!.isNotEmpty;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              checkbox,
+              if (hasError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: BitText(
+                    field.errorText!,
+                    style: theme.bodySmall.copyWith(
+                      color: theme.errorColor,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+    }
+
+    return checkbox;
+  }
+
+  Widget _buildCheckboxWidget(BuildContext context, theme) {
     if (widget.title == null) {
       return _buildCheckbox(context);
     }
