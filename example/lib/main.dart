@@ -14,6 +14,7 @@ import 'package:example/input/bit_input.dart';
 import 'package:example/input/bit_raw_input.dart';
 import 'package:example/input/bit_input_count.dart';
 import 'package:example/popover/bit_popover.dart';
+import 'package:example/progress/bit_progress.dart';
 import 'package:example/radio/bit_radio.dart';
 import 'package:example/select/bit_select.dart';
 import 'package:example/sheet/bit_sheet.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         BitSocialButtonStory,
         BitAvatarStory,
         BitBadgeStory,
+        BitProgressStory,
         BitSheetStory,
         BitDialogStory,
         BitModalStory,
