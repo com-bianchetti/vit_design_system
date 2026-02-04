@@ -275,10 +275,10 @@ class _BitChipState extends State<BitChip> {
     final effectivePadding =
         widget.padding ??
         (visualDensity == VisualDensity.compact
-            ? const EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+            ? theme.values.chipCompactPadding
             : visualDensity == VisualDensity.comfortable
-            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
-            : const EdgeInsets.symmetric(horizontal: 12, vertical: 8));
+            ? theme.values.chipComfortablePadding
+            : theme.values.chipStandardPadding);
 
     final effectiveBorderRadius = widget.borderRadius ?? theme.borderRadius;
 

@@ -23,6 +23,9 @@ class BitValues {
   final EdgeInsetsGeometry selectItemComfortablePadding;
   final EdgeInsetsGeometry selectItemStandardPadding;
   final EdgeInsetsGeometry selectItemCompactPadding;
+  final EdgeInsetsGeometry chipComfortablePadding;
+  final EdgeInsetsGeometry chipStandardPadding;
+  final EdgeInsetsGeometry chipCompactPadding;
 
   const BitValues({
     this.buttonComfortableHeight = 65,
@@ -64,6 +67,18 @@ class BitValues {
     this.selectItemCompactPadding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 14,
+    ),
+    this.chipComfortablePadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 10,
+    ),
+    this.chipStandardPadding = const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 8,
+    ),
+    this.chipCompactPadding = const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 6,
     ),
   });
 }

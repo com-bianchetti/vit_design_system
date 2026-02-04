@@ -11,6 +11,7 @@ import 'package:example/date/bit_date.dart';
 import 'package:example/dialog/bit_dialog.dart';
 import 'package:example/modal/bit_modal.dart';
 import 'package:example/form/bit_form.dart';
+import 'package:example/fields/bit_fields.dart';
 import 'package:example/input/bit_input.dart';
 import 'package:example/input/bit_raw_input.dart';
 import 'package:example/input/bit_input_count.dart';
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         BitSelectStory,
         BitDateStory,
         BitFormStory,
+        BitFieldsStory,
       ],
     );
   }
