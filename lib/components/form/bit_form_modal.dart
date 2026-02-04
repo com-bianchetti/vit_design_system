@@ -1,5 +1,6 @@
 import 'package:bit_design_system/components/modal/bit_modal.dart';
 import 'package:bit_design_system/components/progress/bit_progress.dart';
+import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,10 @@ class BitFormModal {
     String? finishButtonText,
     String? backButtonText,
     bool showBackButton = true,
-    EdgeInsets contentPadding = const EdgeInsets.all(16),
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 8,
+    ),
   }) async {
     final controller = BitFormController(
       pages: pages,
@@ -109,9 +113,9 @@ class _BitFormModalHeader extends StatelessWidget {
                     const SizedBox(width: 16),
                     if (currentPage.title != null)
                       Expanded(
-                        child: Text(
+                        child: BitTitle(
                           currentPage.title!,
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          bold: true,
                         ),
                       ),
                   ],
@@ -139,7 +143,10 @@ class _BitFormModalContent extends StatefulWidget {
 
   const _BitFormModalContent({
     required this.controller,
-    this.contentPadding = const EdgeInsets.all(16),
+    this.contentPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 8,
+    ),
   });
 
   @override
@@ -162,8 +169,6 @@ class _BitFormModalContentState extends State<_BitFormModalContent>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return ListenableBuilder(
       listenable: widget.controller,
       builder: (context, _) {
@@ -205,13 +210,29 @@ class _BitFormModalContentState extends State<_BitFormModalContent>
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               if (page.subtitle != null) ...[
-                                Text(
+                                BitText(
                                   page.subtitle!,
-                                  style: theme.textTheme.bodyMedium,
                                 ),
                                 const SizedBox(height: 24),
                               ],
-                              ...page.children,
+                              if (page.spacing != null)
+                                ...List.generate(
+                                  page.children.length,
+                                  (childIndex) {
+                                    if (childIndex ==
+                                        page.children.length - 1) {
+                                      return page.children[childIndex];
+                                    }
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: page.spacing!,
+                                      ),
+                                      child: page.children[childIndex],
+                                    );
+                                  },
+                                )
+                              else
+                                ...page.children,
                               const SizedBox(height: 24),
                             ],
                           ),

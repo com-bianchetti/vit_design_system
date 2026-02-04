@@ -9,6 +9,7 @@ class BitFormPage {
   final String? continueButtonText;
   final String? backButtonText;
   final bool Function()? customValidator;
+  final double? spacing;
 
   const BitFormPage({
     this.title,
@@ -19,5 +20,6 @@ class BitFormPage {
     this.backButtonText,
     this.customValidator,
     this.children = const [],
+    this.spacing,
   });
 }

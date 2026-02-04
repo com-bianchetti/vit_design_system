@@ -6,6 +6,7 @@ import 'package:example/button/bit_button.dart';
 import 'package:example/button/bit_social_button.dart';
 import 'package:example/badge/bit_badge.dart';
 import 'package:example/checkbox/bit_checkbox.dart';
+import 'package:example/chip/bit_chip.dart';
 import 'package:example/date/bit_date.dart';
 import 'package:example/dialog/bit_dialog.dart';
 import 'package:example/modal/bit_modal.dart';
@@ -18,6 +19,7 @@ import 'package:example/progress/bit_progress.dart';
 import 'package:example/radio/bit_radio.dart';
 import 'package:example/select/bit_select.dart';
 import 'package:example/sheet/bit_sheet.dart';
+import 'package:example/slider/bit_slider.dart';
 import 'package:example/switch/bit_switch.dart';
 import 'package:example/text/bit_text.dart';
 import 'package:example/text/bit_text_rich.dart';
@@ -49,6 +51,8 @@ class MyApp extends StatelessWidget {
         BitSwitchStory,
         BitCheckboxStory,
         BitRadioStory,
+        BitChipStory,
+        BitSliderStory,
         BitInputStory,
         BitRawInputStory,
         BitInputCountStory,

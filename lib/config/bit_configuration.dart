@@ -8,6 +8,8 @@ class BitConfiguration {
   final bool showCheckboxItemBackground;
   final bool showRadioItemBorder;
   final bool showRadioItemBackground;
+  final bool showSliderItemBorder;
+  final bool showSliderItemBackground;
   final bool showInputBorder;
   final bool showInputBackground;
   final BitInputMode inputMode;
@@ -20,6 +22,8 @@ class BitConfiguration {
     this.showCheckboxItemBackground = true,
     this.showRadioItemBorder = true,
     this.showRadioItemBackground = true,
+    this.showSliderItemBorder = true,
+    this.showSliderItemBackground = true,
     this.showInputBorder = true,
     this.showInputBackground = true,
     this.inputMode = BitInputMode.floatingLabel,

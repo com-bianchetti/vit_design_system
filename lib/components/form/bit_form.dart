@@ -1,3 +1,4 @@
+import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:flutter/material.dart';
 
 import 'bit_form_controller.dart';
@@ -169,20 +170,36 @@ class _BitFormState extends State<BitForm> with SingleTickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (page.title != null) ...[
-                              Text(
+                              BitTitle(
                                 page.title!,
-                                style: theme.textTheme.headlineSmall,
+                                bold: true,
                               ),
                               const SizedBox(height: 8),
                             ],
                             if (page.subtitle != null) ...[
-                              Text(
+                              BitText(
                                 page.subtitle!,
                                 style: theme.textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 24),
                             ],
-                            ...page.children,
+                            if (page.spacing != null)
+                              ...List.generate(
+                                page.children.length,
+                                (childIndex) {
+                                  if (childIndex == page.children.length - 1) {
+                                    return page.children[childIndex];
+                                  }
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: page.spacing!,
+                                    ),
+                                    child: page.children[childIndex],
+                                  );
+                                },
+                              )
+                            else
+                              ...page.children,
                             const SizedBox(height: 24),
                           ],
                         ),
