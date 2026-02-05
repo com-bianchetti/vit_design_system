@@ -1,6 +1,7 @@
 import 'package:bit_design_system/components/dialog/bit_dialog.dart';
 import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
+import 'package:example/accordion/bit_accordion.dart';
 import 'package:example/avatar/bit_avatar.dart';
 import 'package:example/button/bit_button.dart';
 import 'package:example/button/bit_social_button.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         BitAvatarStory,
         BitBadgeStory,
         BitProgressStory,
+        BitAccordionStory,
         BitSheetStory,
         BitDialogStory,
         BitModalStory,

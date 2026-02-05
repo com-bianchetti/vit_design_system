@@ -12,6 +12,7 @@ export 'components/avatar/bit_avatar_group.dart';
 export 'components/avatar/bit_avatar_preview.dart';
 export 'components/badge/bit_badge.dart';
 export 'components/progress/bit_progress.dart';
+export 'components/accordion/bit_accordion.dart';
 export 'components/sheet/bit_sheet.dart';
 export 'components/dialog/bit_dialog.dart';
 export 'components/modal/bit_modal.dart';
