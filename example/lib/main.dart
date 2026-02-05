@@ -25,6 +25,7 @@ import 'package:example/slider/bit_slider.dart';
 import 'package:example/switch/bit_switch.dart';
 import 'package:example/text/bit_text.dart';
 import 'package:example/text/bit_text_rich.dart';
+import 'package:example/toast/bit_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         BitDialogStory,
         BitModalStory,
         BitPopoverStory,
+        BitToastStory,
         BitSwitchStory,
         BitCheckboxStory,
         BitRadioStory,

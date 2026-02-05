@@ -49,5 +49,6 @@ export 'components/fields/bit_birthday_field.dart';
 export 'components/fields/bit_date_range_field.dart';
 export 'components/fields/bit_terms_field.dart';
 export 'components/fields/bit_newsletter_field.dart';
+export 'components/toast/bit_toast.dart';
 export 'config/bit_types.dart';
 export 'utils/extensions.dart';

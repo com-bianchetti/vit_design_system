@@ -323,19 +323,14 @@ class _BitAccordionState extends State<BitAccordion> {
       return widget.headerPadding!;
     }
 
+    final values = context.theme.values;
+
     return switch (density) {
-      VisualDensity.compact => const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
-      VisualDensity.comfortable => const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      _ => const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16,
-      ),
+      VisualDensity.compact =>
+        values.accordionHeaderCompactPadding as EdgeInsets,
+      VisualDensity.comfortable =>
+        values.accordionHeaderComfortablePadding as EdgeInsets,
+      _ => values.accordionHeaderStandardPadding as EdgeInsets,
     };
   }
 
@@ -344,10 +339,13 @@ class _BitAccordionState extends State<BitAccordion> {
       return widget.bodyPadding!;
     }
 
+    final values = context.theme.values;
+
     return switch (density) {
-      VisualDensity.compact => const EdgeInsets.all(12),
-      VisualDensity.comfortable => const EdgeInsets.all(20),
-      _ => const EdgeInsets.all(16),
+      VisualDensity.compact => values.accordionBodyCompactPadding as EdgeInsets,
+      VisualDensity.comfortable =>
+        values.accordionBodyComfortablePadding as EdgeInsets,
+      _ => values.accordionBodyStandardPadding as EdgeInsets,
     };
   }
 

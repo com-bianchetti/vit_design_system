@@ -26,6 +26,18 @@ class BitValues {
   final EdgeInsetsGeometry chipComfortablePadding;
   final EdgeInsetsGeometry chipStandardPadding;
   final EdgeInsetsGeometry chipCompactPadding;
+  final EdgeInsetsGeometry accordionHeaderComfortablePadding;
+  final EdgeInsetsGeometry accordionHeaderStandardPadding;
+  final EdgeInsetsGeometry accordionHeaderCompactPadding;
+  final EdgeInsetsGeometry accordionBodyComfortablePadding;
+  final EdgeInsetsGeometry accordionBodyStandardPadding;
+  final EdgeInsetsGeometry accordionBodyCompactPadding;
+  final EdgeInsetsGeometry toastComfortablePadding;
+  final EdgeInsetsGeometry toastStandardPadding;
+  final EdgeInsetsGeometry toastCompactPadding;
+  final EdgeInsetsGeometry toastComfortableMargin;
+  final EdgeInsetsGeometry toastStandardMargin;
+  final EdgeInsetsGeometry toastCompactMargin;
 
   const BitValues({
     this.buttonComfortableHeight = 65,
@@ -79,6 +91,45 @@ class BitValues {
     this.chipCompactPadding = const EdgeInsets.symmetric(
       horizontal: 10,
       vertical: 6,
+    ),
+    this.accordionHeaderComfortablePadding = const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 20,
+    ),
+    this.accordionHeaderStandardPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 16,
+    ),
+    this.accordionHeaderCompactPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+    this.accordionBodyComfortablePadding = const EdgeInsets.all(20),
+    this.accordionBodyStandardPadding = const EdgeInsets.all(16),
+    this.accordionBodyCompactPadding = const EdgeInsets.all(12),
+    this.toastComfortablePadding = const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 16,
+    ),
+    this.toastStandardPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+    this.toastCompactPadding = const EdgeInsets.symmetric(
+      horizontal: 14,
+      vertical: 10,
+    ),
+    this.toastComfortableMargin = const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 20,
+    ),
+    this.toastStandardMargin = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 16,
+    ),
+    this.toastCompactMargin = const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 12,
     ),
   });
 }
