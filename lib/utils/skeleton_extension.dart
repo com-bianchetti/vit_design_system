@@ -1,4 +1,4 @@
-import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
+import 'package:vit_design_system/components/skeleton/vit_skeleton_shimmer.dart';
 import 'package:flutter/material.dart';
 
 /// Extension methods for applying skeleton loading effects to widgets.
@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 /// This extension adds convenient methods to any [Widget] for wrapping
 /// it with skeleton loading effects.
 extension SkeletonExtension on Widget {
-  /// Wraps this widget with a [BitSkeletonShimmer] effect.
+  /// Wraps this widget with a [VitSkeletonShimmer] effect.
   ///
   /// This is a convenience method that applies the shimmer loading effect
   /// to any widget. It's equivalent to wrapping the widget in a
-  /// [BitSkeletonShimmer] widget.
+  /// [VitSkeletonShimmer] widget.
   ///
   /// The [isLoading] parameter controls whether the shimmer effect is active.
   /// When false, the widget is returned as-is without any wrapping.
@@ -82,7 +82,7 @@ extension SkeletonExtension on Widget {
     Color? highlightColor,
     Duration duration = const Duration(milliseconds: 1500),
   }) {
-    return BitSkeletonShimmer(
+    return VitSkeletonShimmer(
       enabled: isLoading,
       baseColor: baseColor,
       highlightColor: highlightColor,

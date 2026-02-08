@@ -1,5 +1,5 @@
-import 'package:bit_design_system/utils/color_map.dart';
-import 'package:bit_design_system/utils/extensions.dart';
+import 'package:vit_design_system/utils/color_map.dart';
+import 'package:vit_design_system/utils/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
