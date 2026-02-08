@@ -585,6 +585,7 @@ class _VitAppState extends State<VitApp> {
     final bitLightTheme = ThemeData(
       brightness: theme.brightness,
       primaryColor: theme.primaryColor,
+      splashFactory: NoSplash.splashFactory,
       useMaterial3: false,
       colorScheme: ColorScheme(
         brightness: theme.brightness,
@@ -618,6 +619,7 @@ class _VitAppState extends State<VitApp> {
         : ThemeData(
             brightness: Brightness.dark,
             primaryColor: darkTheme.primaryColor,
+            splashFactory: NoSplash.splashFactory,
             useMaterial3: false,
             colorScheme: ColorScheme(
               brightness: Brightness.dark,
