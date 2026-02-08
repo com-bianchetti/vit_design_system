@@ -1,4 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
@@ -257,6 +259,18 @@ class BitInput extends StatefulWidget {
   /// Whether to enable interactive selection.
   final bool enableInteractiveSelection;
 
+  /// Whether the input is in a skeleton loading state.
+  ///
+  /// When true, the input displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this input will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitInput].
   ///
   /// All parameters are optional and have sensible defaults.
@@ -312,6 +326,7 @@ class BitInput extends StatefulWidget {
     this.inputLabelStyle,
     this.visualDensity,
     this.enableInteractiveSelection = true,
+    this.isLoading = false,
   });
 
   @override
@@ -362,6 +377,75 @@ class _BitInputState extends State<BitInput> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final configuration = theme.configuration;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final effectiveBorderRadius = widget.borderRadius ?? theme.borderRadius;
+      final effectiveContentPadding = switch (widget.visualDensity ??
+          theme.visualDensity) {
+        VisualDensity.compact => theme.values.inputCompactPadding,
+        VisualDensity.standard => theme.values.inputStandardPadding,
+        VisualDensity.comfortable => theme.values.inputComfortablePadding,
+        _ => theme.values.inputStandardPadding,
+      };
+      final effectiveInputMode = widget.inputMode ?? configuration.inputMode;
+
+      final skeletonInput = BitSkeletonShimmer(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.label != null && effectiveInputMode == BitInputMode.fixedLabel)
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 6),
+                child: Container(
+                  height: 16,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonBaseColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            Container(
+              height: 48,
+              padding: widget.contentPadding ?? effectiveContentPadding,
+              decoration: BoxDecoration(
+                color: theme.skeletonBaseColor,
+                borderRadius: effectiveBorderRadius,
+                border: configuration.showInputBorder
+                    ? Border.all(
+                        color: theme.skeletonBaseColor,
+                        width: 1.0,
+                      )
+                    : null,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  height: 16,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (widget.semanticLabel != null) {
+        return Semantics(
+          label: widget.semanticLabel,
+          excludeSemantics: true,
+          child: skeletonInput,
+        );
+      }
+
+      return skeletonInput;
+    }
 
     final effectiveInputMode = widget.inputMode ?? configuration.inputMode;
     final effectiveBorderRadius = widget.borderRadius ?? theme.borderRadius;

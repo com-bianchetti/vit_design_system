@@ -1,3 +1,5 @@
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/config/bit_theme.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:bit_design_system/utils/style_text_parser.dart';
@@ -18,6 +20,7 @@ class BitTitleBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich title text component with bigger font size.
@@ -31,6 +34,7 @@ class BitTitleBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -49,6 +53,7 @@ class BitTitle extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich title text component.
@@ -62,6 +67,7 @@ class BitTitle extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -80,6 +86,7 @@ class BitTitleSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich title text component with smaller font size.
@@ -93,6 +100,7 @@ class BitTitleSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = true,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -111,6 +119,7 @@ class BitTextBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich text component with bigger font size.
@@ -124,6 +133,7 @@ class BitTextBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -142,6 +152,7 @@ class BitText extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich text component.
@@ -155,6 +166,7 @@ class BitText extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -173,6 +185,7 @@ class BitTextSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich text component with smaller font size.
@@ -186,6 +199,7 @@ class BitTextSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -204,6 +218,7 @@ class BitLabelBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich label text component with bigger font size.
@@ -217,6 +232,7 @@ class BitLabelBig extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -235,6 +251,7 @@ class BitLabel extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich label text component.
@@ -248,6 +265,7 @@ class BitLabel extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -266,6 +284,7 @@ class BitLabelSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text);
 
   /// Creates a rich label text component with smaller font size.
@@ -279,6 +298,7 @@ class BitLabelSmall extends _BitText {
     super.onTapActions,
     super.key,
     super.isHeading = false,
+    super.isLoading = false,
   }) : super(text: text, isRichText: true);
 }
 
@@ -292,6 +312,7 @@ class _BitText extends StatelessWidget {
   final TextDirection textDirection;
   final Map<String, VoidCallback>? onTapActions;
   final bool isHeading;
+  final bool isLoading;
 
   const _BitText({
     required this.baseStyle,
@@ -303,11 +324,49 @@ class _BitText extends StatelessWidget {
     this.textDirection = TextDirection.ltr,
     this.onTapActions,
     this.isHeading = false,
+    this.isLoading = false,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveLoading = isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final theme = context.themeSafe;
+      final effectiveStyle = baseStyle
+          .copyWith(
+            color: theme?.onBackrgroundColor,
+            fontFamily: theme?.fontFamily,
+            fontWeight: bold != null
+                ? (bold! ? FontWeight.bold : FontWeight.normal)
+                : null,
+          )
+          .merge(style);
+
+      return BitSkeletonShimmer(
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: theme?.skeletonBaseColor ?? const Color(0xFFE0E0E0),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Opacity(
+                opacity: 0,
+                child: Text(
+                  text,
+                  textAlign: textAlign,
+                  textDirection: textDirection,
+                  style: effectiveStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     late Widget textChild;
 
     if (isRichText) {

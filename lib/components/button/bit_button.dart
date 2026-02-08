@@ -1,3 +1,5 @@
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -47,11 +49,34 @@ class BitButton extends StatefulWidget {
   /// Defaults to false.
   final bool isDisabled;
 
-  /// Whether the button is in a loading state.
+  /// Whether the button is in a skeleton loading state.
   ///
-  /// When true, the button should display a loading indicator.
+  /// When true, the button displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this button will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// To explicitly prevent skeleton loading when inside a [BitLoadingScope],
+  /// you must handle the logic at a higher level.
+  ///
   /// Defaults to false.
   final bool isLoading;
+
+  /// Whether the button is in an internal loading state with spinner.
+  ///
+  /// When true, the button displays an internal loading spinner indicator.
+  /// This is different from [isLoading] which shows a skeleton shimmer effect.
+  ///
+  /// Use [isLoadingState] when you want to show a spinner inside the button
+  /// while keeping the button interactive appearance.
+  ///
+  /// Use [isLoading] when you want to show a skeleton loading state that
+  /// indicates the entire button and surrounding content is loading.
+  ///
+  /// Defaults to false.
+  final bool isLoadingState;
 
   /// Factor used to darken the button color when pressed.
   ///
@@ -179,6 +204,7 @@ class BitButton extends StatefulWidget {
     required this.onPressed,
     this.isDisabled = false,
     this.isLoading = false,
+    this.isLoadingState = false,
     this.darkenFactor = 0.2,
     this.backgroundColor,
     this.foregroundColor,
@@ -315,6 +341,78 @@ class _BitButtonState extends State<BitButton> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final visualDensity = widget.visualDensity ?? theme.visualDensity;
+      final height = _getHeight(visualDensity, context);
+      final borderRadius = widget.borderRadius ?? theme.borderRadius;
+
+      final skeletonButton = LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool isUnconstrained = constraints.maxWidth.isInfinite;
+          final bool isScrollableChild = Scrollable.maybeOf(context) != null;
+
+          double? finalWidth = widget.width;
+
+          if (finalWidth == null) {
+            if (isUnconstrained && isScrollableChild) {
+              finalWidth = _calculateButtonWidth(context);
+            } else if (isUnconstrained && !isScrollableChild) {
+              finalWidth = _calculateButtonWidth(context);
+            } else {
+              finalWidth = constraints.maxWidth;
+            }
+          }
+
+          return BitSkeletonShimmer(
+            child: Container(
+              width: finalWidth,
+              height: height,
+              padding: widget.padding,
+              constraints: BoxConstraints(
+                maxWidth: widget.maxWidth ?? theme.buttonMaxWidth,
+              ),
+              decoration: BoxDecoration(
+                color: theme.skeletonBaseColor,
+                borderRadius: borderRadius,
+                border: widget.borderColor != null
+                    ? Border.all(
+                        color: theme.skeletonBaseColor,
+                        width: widget.borderWidth,
+                      )
+                    : null,
+              ),
+              child: Center(
+                child: Opacity(
+                  opacity: 0,
+                  child: BitText(
+                    widget.text,
+                    bold: widget.textStyle == null ? true : null,
+                    baseStyle: visualDensity == VisualDensity.compact
+                        ? theme.bodySmall
+                        : theme.body,
+                    style: widget.textStyle ??
+                        TextStyle(
+                          color: widget.foregroundColor ?? theme.onPrimaryColor,
+                        ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      if (_isParentRow(context)) {
+        return Flexible(
+          flex: widget.flex,
+          child: skeletonButton,
+        );
+      }
+      return skeletonButton;
+    }
+
     final baseColor = widget.backgroundColor ?? theme.primaryColor;
     final currentColor = widget.isDisabled
         ? widget.disabledColor ?? theme.disabledColor

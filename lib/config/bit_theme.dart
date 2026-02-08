@@ -51,6 +51,12 @@ class BitTheme {
   /// The border color of the app.
   final Color borderColor;
 
+  /// The base color for skeleton loading shimmer effect.
+  final Color skeletonBaseColor;
+
+  /// The highlight color for skeleton loading shimmer effect.
+  final Color skeletonHighlightColor;
+
   /// The colors of the app. Use to define custom colors.
   final Map<String, Color> colors;
 
@@ -177,6 +183,8 @@ class BitTheme {
     this.disabledColor = const Color(0xffCBCBCB),
     this.borderColor = const Color(0xffE2E2E2),
     this.onBackgroundVariantColor = const Color(0xff666666),
+    this.skeletonBaseColor = const Color(0xFFE0E0E0),
+    this.skeletonHighlightColor = const Color(0xFFF5F5F5),
     this.colors = const {},
     this.brightness = Brightness.light,
     this.fontFamily = 'Inter',

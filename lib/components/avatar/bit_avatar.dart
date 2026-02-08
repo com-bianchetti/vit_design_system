@@ -128,6 +128,18 @@ class BitAvatar extends StatefulWidget {
   /// The alignment of the badge relative to the avatar.
   final Alignment? badgeAlignment;
 
+  /// Whether the avatar is in a skeleton loading state.
+  ///
+  /// When true, the avatar displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this avatar will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitAvatar] widget.
   ///
   /// See class documentation for details on each parameter.
@@ -167,6 +179,7 @@ class BitAvatar extends StatefulWidget {
     this.badgeSize,
     this.badgeOffset,
     this.badgeAlignment,
+    this.isLoading = false,
   });
 
   @override
@@ -212,6 +225,60 @@ class _BitAvatarState extends State<BitAvatar> {
       VisualDensity.comfortable => theme.values.avatarComfortableRadius,
       _ => theme.values.avatarStandardRadius,
     };
+    final effectiveLoading =
+        widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final skeletonAvatar = BitSkeletonShimmer(
+        child: CircleAvatar(
+          backgroundColor: theme.skeletonBaseColor,
+          radius: widget.radius ?? defaultRadius,
+          minRadius: widget.minRadius,
+          maxRadius: widget.maxRadius,
+        ),
+      );
+
+      final outerAvatar = Semantics(
+        container: false,
+        excludeSemantics: true,
+        child: CircleAvatar(
+          backgroundColor: theme.skeletonBaseColor,
+          radius: widget.radius != null
+              ? (widget.radius! + widget.borderWidth)
+              : (defaultRadius + widget.borderWidth),
+          minRadius: widget.minRadius,
+          maxRadius: widget.maxRadius,
+          child: skeletonAvatar,
+        ),
+      );
+
+      return widget.badgeCount != null
+          ? Badge.count(
+              backgroundColor: theme.skeletonBaseColor,
+              textColor: theme.skeletonHighlightColor,
+              alignment: widget.badgeAlignment ?? Alignment.bottomRight,
+              offset: widget.badgeOffset ?? Offset(0, -13),
+              largeSize: widget.badgeSize ?? 24,
+              smallSize: widget.badgeSize ?? 16,
+              count: widget.badgeCount!,
+              child: outerAvatar,
+            )
+          : widget.badgeLabel != null
+          ? Badge(
+              backgroundColor: theme.skeletonBaseColor,
+              offset: widget.badgeOffset ?? Offset(0, -13),
+              alignment: widget.badgeAlignment ?? Alignment.bottomRight,
+              largeSize: widget.badgeSize ?? 24,
+              smallSize: widget.badgeSize ?? 16,
+              label: Container(
+                width: 20,
+                height: 12,
+                color: theme.skeletonHighlightColor,
+              ),
+              child: outerAvatar,
+            )
+          : outerAvatar;
+    }
 
     final overlay = widget.overlayIcon != null
         ? Semantics(

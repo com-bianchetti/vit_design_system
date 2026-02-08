@@ -21,6 +21,7 @@ import 'package:example/progress/bit_progress.dart';
 import 'package:example/radio/bit_radio.dart';
 import 'package:example/select/bit_select.dart';
 import 'package:example/sheet/bit_sheet.dart';
+import 'package:example/skeleton/bit_skeleton.dart';
 import 'package:example/slider/bit_slider.dart';
 import 'package:example/switch/bit_switch.dart';
 import 'package:example/text/bit_text.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Storybook(
       stories: [
+        BitSkeletonStory,
         BitTextStory,
         BitTextRichStory,
         BitButtonStory,

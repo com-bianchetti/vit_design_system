@@ -1,4 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -201,6 +203,18 @@ class BitChip extends StatefulWidget {
   /// Defaults to true.
   final bool solidBackground;
 
+  /// Whether the chip is in a skeleton loading state.
+  ///
+  /// When true, the chip displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this chip will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitChip].
   ///
   /// The [label] parameter is required.
@@ -234,6 +248,7 @@ class BitChip extends StatefulWidget {
     this.id,
     this.value,
     this.solidBackground = true,
+    this.isLoading = false,
   });
 
   @override
@@ -271,6 +286,63 @@ class _BitChipState extends State<BitChip> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final visualDensity = widget.visualDensity ?? theme.visualDensity;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final effectivePadding =
+          widget.padding ??
+          (visualDensity == VisualDensity.compact
+              ? theme.values.chipCompactPadding
+              : visualDensity == VisualDensity.comfortable
+              ? theme.values.chipComfortablePadding
+              : theme.values.chipStandardPadding);
+
+      final effectiveBorderRadius = widget.borderRadius ?? theme.borderRadius;
+
+      return BitSkeletonShimmer(
+        child: Material(
+          elevation: widget.elevation,
+          borderRadius: effectiveBorderRadius,
+          color: theme.skeletonBaseColor,
+          child: Container(
+            padding: effectivePadding,
+            decoration: BoxDecoration(
+              borderRadius: effectiveBorderRadius,
+              border: Border.all(
+                color: theme.skeletonBaseColor,
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.avatar != null || widget.icon != null) ...[
+                  Container(
+                    width: widget.iconSize,
+                    height: widget.iconSize,
+                    decoration: BoxDecoration(
+                      color: theme.skeletonHighlightColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  SizedBox(
+                    width: visualDensity == VisualDensity.compact ? 6 : 8,
+                  ),
+                ],
+                Container(
+                  height: 16,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final effectivePadding =
         widget.padding ??
