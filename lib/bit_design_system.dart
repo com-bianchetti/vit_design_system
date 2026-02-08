@@ -15,6 +15,7 @@ export 'components/progress/bit_progress.dart';
 export 'components/accordion/bit_accordion.dart';
 export 'components/sheet/bit_sheet.dart';
 export 'components/dialog/bit_dialog.dart';
+export 'components/loading/bit_loading.dart';
 export 'components/modal/bit_modal.dart';
 export 'components/popover/bit_popover.dart';
 export 'components/switch/bit_switch.dart';

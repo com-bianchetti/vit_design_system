@@ -9,6 +9,7 @@ import 'package:example/checkbox/bit_checkbox.dart';
 import 'package:example/chip/bit_chip.dart';
 import 'package:example/date/bit_date.dart';
 import 'package:example/dialog/bit_dialog.dart';
+import 'package:example/loading/bit_loading.dart';
 import 'package:example/modal/bit_modal.dart';
 import 'package:example/form/bit_form.dart';
 import 'package:example/fields/bit_fields.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         BitAccordionStory,
         BitSheetStory,
         BitDialogStory,
+        BitLoadingStory,
         BitModalStory,
         BitPopoverStory,
         BitToastStory,

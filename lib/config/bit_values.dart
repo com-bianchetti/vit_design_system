@@ -41,6 +41,12 @@ class BitValues {
   final EdgeInsetsGeometry cardComfortablePadding;
   final EdgeInsetsGeometry cardStandardPadding;
   final EdgeInsetsGeometry cardCompactPadding;
+  final double loadingComfortableSize;
+  final double loadingStandardSize;
+  final double loadingCompactSize;
+  final double loadingComfortableStrokeWidth;
+  final double loadingStandardStrokeWidth;
+  final double loadingCompactStrokeWidth;
 
   const BitValues({
     this.buttonComfortableHeight = 65,
@@ -137,5 +143,11 @@ class BitValues {
     this.cardComfortablePadding = const EdgeInsets.all(24),
     this.cardStandardPadding = const EdgeInsets.all(16),
     this.cardCompactPadding = const EdgeInsets.all(12),
+    this.loadingComfortableSize = 60,
+    this.loadingStandardSize = 50,
+    this.loadingCompactSize = 40,
+    this.loadingComfortableStrokeWidth = 5,
+    this.loadingStandardStrokeWidth = 4,
+    this.loadingCompactStrokeWidth = 3,
   });
 }
