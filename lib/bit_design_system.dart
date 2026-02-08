@@ -50,6 +50,7 @@ export 'components/fields/bit_date_range_field.dart';
 export 'components/fields/bit_terms_field.dart';
 export 'components/fields/bit_newsletter_field.dart';
 export 'components/toast/bit_toast.dart';
+export 'components/card/bit_card.dart';
 export 'components/skeleton/bit_loading_scope.dart';
 export 'components/skeleton/bit_skeleton_shimmer.dart';
 export 'components/skeleton/bit_skeleton_utils.dart';

@@ -38,6 +38,9 @@ class BitValues {
   final EdgeInsetsGeometry toastComfortableMargin;
   final EdgeInsetsGeometry toastStandardMargin;
   final EdgeInsetsGeometry toastCompactMargin;
+  final EdgeInsetsGeometry cardComfortablePadding;
+  final EdgeInsetsGeometry cardStandardPadding;
+  final EdgeInsetsGeometry cardCompactPadding;
 
   const BitValues({
     this.buttonComfortableHeight = 65,
@@ -131,5 +134,8 @@ class BitValues {
       horizontal: 12,
       vertical: 12,
     ),
+    this.cardComfortablePadding = const EdgeInsets.all(24),
+    this.cardStandardPadding = const EdgeInsets.all(16),
+    this.cardCompactPadding = const EdgeInsets.all(12),
   });
 }
