@@ -21,33 +21,34 @@ class VitLanguageField extends StatelessWidget {
     this.customLanguages,
   });
 
-  static const List<String> defaultLanguages = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Italian',
-    'Portuguese',
-    'Russian',
-    'Chinese',
-    'Japanese',
-    'Korean',
-    'Arabic',
-    'Hindi',
-    'Dutch',
-    'Swedish',
-    'Norwegian',
-    'Danish',
-    'Finnish',
-    'Polish',
-    'Turkish',
-    'Greek',
-    'Other',
-  ];
-
   @override
   Widget build(BuildContext context) {
     final strings = context.theme.bitStrings;
+
+    List<String> defaultLanguages = [
+      strings.languageEnglish,
+      strings.languageSpanish,
+      strings.languageFrench,
+      strings.languageGerman,
+      strings.languageItalian,
+      strings.languagePortuguese,
+      strings.languageRussian,
+      strings.languageChinese,
+      strings.languageJapanese,
+      strings.languageKorean,
+      strings.languageArabic,
+      strings.languageHindi,
+      strings.languageDutch,
+      strings.languageSwedish,
+      strings.languageNorwegian,
+      strings.languageDanish,
+      strings.languageFinnish,
+      strings.languagePolish,
+      strings.languageTurkish,
+      strings.languageGreek,
+      strings.languageOther,
+    ];
+
     return VitSelect(
       id: id ?? 'language',
       label: label ?? strings.language,

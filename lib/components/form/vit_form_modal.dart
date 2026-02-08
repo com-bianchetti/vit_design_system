@@ -85,51 +85,63 @@ class _VitFormModalHeader extends StatelessWidget {
         final currentPage = controller.currentFormPage;
 
         return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            decoration: BoxDecoration(
-              color: context.theme.backgroundColor,
-              border: Border(
-                bottom: BorderSide(
-                  color: context.theme.borderColor,
-                  width: 1,
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
                 ),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Material(
-                      child: IconButton(
-                        onPressed: () => _handleBackButton(context),
-                        icon: const Icon(Icons.arrow_back),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    if (currentPage.title != null)
-                      Expanded(
-                        child: VitTitle(
-                          currentPage.title!,
-                          bold: true,
+                decoration: BoxDecoration(
+                  color: context.theme.backgroundColor,
+                  border: showPageIndicator
+                      ? null
+                      : Border(
+                          bottom: BorderSide(
+                            color: context.theme.borderColor,
+                            width: 1,
+                          ),
                         ),
-                      ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Material(
+                          child: IconButton(
+                            onPressed: () => _handleBackButton(context),
+                            icon: const Icon(Icons.arrow_back),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        if (currentPage.title != null)
+                          Expanded(
+                            child: VitTitle(
+                              currentPage.title!,
+                              bold: true,
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-                if (showPageIndicator) ...[
-                  const SizedBox(height: 16),
-                  VitProgress(
+              ),
+              if (showPageIndicator)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: VitProgress(
                     key: Key('progress_${controller.currentPage}'),
                     value: (controller.currentPage + 1) / controller.totalPages,
                     minHeight: 4,
                   ),
-                ],
-              ],
-            ),
+                ),
+            ],
           ),
         );
       },

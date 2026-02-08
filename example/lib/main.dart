@@ -16,6 +16,9 @@ import 'package:example/fields/vit_fields.dart';
 import 'package:example/input/vit_input.dart';
 import 'package:example/input/vit_raw_input.dart';
 import 'package:example/input/vit_input_count.dart';
+import 'package:example/layout/vit_appbar.dart';
+import 'package:example/layout/vit_list_view.dart';
+import 'package:example/layout/vit_scaffold.dart';
 import 'package:example/popover/vit_popover.dart';
 import 'package:example/progress/vit_progress.dart';
 import 'package:example/radio/vit_radio.dart';
@@ -70,6 +73,9 @@ class MyApp extends StatelessWidget {
         VitFormStory,
         VitFieldsStory,
         VitSkeletonStory,
+        VitAppBarStory,
+        VitListViewStory,
+        VitScaffoldStory,
       ],
     );
   }

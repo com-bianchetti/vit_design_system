@@ -57,6 +57,27 @@ class VitStrings {
   final String newsletterSubtitle;
   final String textArea;
   final String textAreaHint;
+  final String languageEnglish;
+  final String languageSpanish;
+  final String languageFrench;
+  final String languageGerman;
+  final String languageItalian;
+  final String languagePortuguese;
+  final String languageRussian;
+  final String languageChinese;
+  final String languageJapanese;
+  final String languageKorean;
+  final String languageArabic;
+  final String languageHindi;
+  final String languageDutch;
+  final String languageSwedish;
+  final String languageNorwegian;
+  final String languageDanish;
+  final String languageFinnish;
+  final String languagePolish;
+  final String languageTurkish;
+  final String languageGreek;
+  final String languageOther;
 
   const VitStrings({
     this.confirm = 'Confirm',
@@ -115,5 +136,26 @@ class VitStrings {
     this.newsletterSubtitle = 'Receive updates and promotions',
     this.textArea = 'Text Area',
     this.textAreaHint = 'Enter text',
+    this.languageEnglish = 'English',
+    this.languageSpanish = 'Spanish',
+    this.languageFrench = 'French',
+    this.languageGerman = 'German',
+    this.languageItalian = 'Italian',
+    this.languagePortuguese = 'Portuguese',
+    this.languageRussian = 'Russian',
+    this.languageChinese = 'Chinese',
+    this.languageJapanese = 'Japanese',
+    this.languageKorean = 'Korean',
+    this.languageArabic = 'Arabic',
+    this.languageHindi = 'Hindi',
+    this.languageDutch = 'Dutch',
+    this.languageSwedish = 'Swedish',
+    this.languageNorwegian = 'Norwegian',
+    this.languageDanish = 'Danish',
+    this.languageFinnish = 'Finnish',
+    this.languagePolish = 'Polish',
+    this.languageTurkish = 'Turkish',
+    this.languageGreek = 'Greek',
+    this.languageOther = 'Other',
   });
 }

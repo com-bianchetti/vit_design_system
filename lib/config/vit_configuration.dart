@@ -12,6 +12,7 @@ class VitConfiguration {
   final bool showSliderItemBackground;
   final bool showInputBorder;
   final bool showInputBackground;
+  final bool showCardBorder;
   final VitInputMode inputMode;
   final TextStyle? inputLabelStyle;
 
@@ -26,6 +27,7 @@ class VitConfiguration {
     this.showSliderItemBackground = true,
     this.showInputBorder = true,
     this.showInputBackground = true,
+    this.showCardBorder = true,
     this.inputMode = VitInputMode.floatingLabel,
     this.inputLabelStyle,
   });

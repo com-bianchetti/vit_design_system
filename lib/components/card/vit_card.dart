@@ -140,8 +140,8 @@ class VitCard extends StatelessWidget {
 
   /// Whether to show a border around the card.
   ///
-  /// Defaults to false.
-  final bool showBorder;
+  /// Defaults to theme's showCardBorder configuration.
+  final bool? showBorder;
 
   /// Color of the card border.
   ///
@@ -238,7 +238,7 @@ class VitCard extends StatelessWidget {
     this.margin,
     this.width,
     this.height,
-    this.showBorder = false,
+    this.showBorder,
     this.borderColor,
     this.borderWidth = 1.0,
     this.onTap,
@@ -286,9 +286,9 @@ class VitCard extends StatelessWidget {
               padding: effectivePadding,
               decoration: BoxDecoration(
                 borderRadius: effectiveBorderRadius,
-                border: showBorder
+                border: (showBorder ?? theme.configuration.showCardBorder)
                     ? Border.all(
-                        color: theme.skeletonBaseColor,
+                        color: theme.borderColor,
                         width: borderWidth,
                       )
                     : null,
@@ -316,7 +316,7 @@ class VitCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: effectiveBorderRadius,
-        border: showBorder
+        border: (showBorder ?? theme.configuration.showCardBorder)
             ? Border.all(
                 color: effectiveBorderColor,
                 width: borderWidth,
@@ -339,7 +339,7 @@ class VitCard extends StatelessWidget {
           padding: effectivePadding,
           decoration: BoxDecoration(
             gradient: gradient,
-            border: showBorder
+            border: (showBorder ?? theme.configuration.showCardBorder)
                 ? Border.all(
                     color: effectiveBorderColor,
                     width: borderWidth,
