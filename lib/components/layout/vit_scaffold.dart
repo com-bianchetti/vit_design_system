@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:vit_design_system/components/layout/vit_appbar.dart';
+import 'package:vit_design_system/components/layout/vit_bottom_bar.dart';
 import 'package:vit_design_system/components/layout/vit_list_view.dart';
 
 class VitScaffold extends StatelessWidget {
@@ -52,9 +53,30 @@ class VitScaffold extends StatelessWidget {
     this.gridCrossAxisSpacing = 8.0,
     this.gridChildAspectRatio = 1.0,
     this.gridMainAxisExtent,
+    this.navigationItems,
+    this.navigationPages,
+    this.navigationIndex,
+    this.onNavigationIndexChanged,
+    this.navigationVariant = VitBottomBarVariant.standard,
+    this.navigationAnimation = VitBottomBarAnimation.fadeScale,
+    this.navigationLabelBehavior = VitBottomBarLabelBehavior.alwaysShow,
+    this.sideBarPosition = VitSideBarPosition.left,
+    this.sideBarItemStyle = VitSideBarItemStyle.rounded,
+    this.sideBarExpandable = true,
+    this.sideBarInitiallyExpanded = true,
+    this.sideBarExpandedWidth = 250,
+    this.sideBarCollapsedWidth = 72,
+    this.bottomBarItemBuilder,
+    this.sideBarItemBuilder,
+    this.sideBarHeaderBuilder,
+    this.sideBarFooterBuilder,
+    this.navigationSelectedColor,
+    this.navigationUnselectedColor,
+    this.navigationBackgroundColor,
+    this.preserveNavigationState = true,
   }) : assert(
-         body != null || children != null,
-         'Either body or children must be provided',
+         body != null || children != null || (navigationItems != null && navigationPages != null),
+         'Either body, children, or navigation (navigationItems and navigationPages) must be provided',
        );
 
   /// If true, and [bottomNavigationBar] or [persistentFooterButtons]
@@ -427,15 +449,162 @@ class VitScaffold extends StatelessWidget {
 
   final List<Widget>? children;
 
-  bool get _shouldShowAppBar =>
-      showAppBar &&
-      (appBar != null ||
-          title != null ||
-          titleWidget != null ||
-          leading != null);
+  /// Navigation items for responsive bottom/side navigation.
+  ///
+  /// When provided along with [navigationPages], enables the integrated
+  /// navigation system that shows a bottom bar on phones and a sidebar
+  /// on tablets/larger screens.
+  ///
+  /// The number of items must match [navigationPages].
+  final List<VitBottomBarItem>? navigationItems;
+
+  /// Pages corresponding to each navigation item.
+  ///
+  /// When provided along with [navigationItems], enables the integrated
+  /// navigation system.
+  ///
+  /// The number of pages must match [navigationItems].
+  final List<Widget>? navigationPages;
+
+  /// Currently selected navigation index.
+  ///
+  /// Used when [navigationItems] and [navigationPages] are provided.
+  /// Defaults to 0.
+  final int? navigationIndex;
+
+  /// Callback when navigation index changes.
+  ///
+  /// Used when [navigationItems] and [navigationPages] are provided.
+  final ValueChanged<int>? onNavigationIndexChanged;
+
+  /// Visual variant for the navigation bar.
+  ///
+  /// Defaults to [VitBottomBarVariant.standard].
+  final VitBottomBarVariant navigationVariant;
+
+  /// Animation type for navigation item transitions.
+  ///
+  /// Defaults to [VitBottomBarAnimation.fadeScale].
+  final VitBottomBarAnimation navigationAnimation;
+
+  /// Label behavior for the bottom navigation bar.
+  ///
+  /// Defaults to [VitBottomBarLabelBehavior.alwaysShow].
+  final VitBottomBarLabelBehavior navigationLabelBehavior;
+
+  /// Position of the sidebar on tablets.
+  ///
+  /// Defaults to [VitSideBarPosition.left].
+  final VitSideBarPosition sideBarPosition;
+
+  /// Style variant for sidebar items.
+  ///
+  /// Defaults to [VitSideBarItemStyle.rounded].
+  final VitSideBarItemStyle sideBarItemStyle;
+
+  /// Whether the sidebar can be expanded/collapsed.
+  ///
+  /// Defaults to true.
+  final bool sideBarExpandable;
+
+  /// Initial expanded state of the sidebar.
+  ///
+  /// Defaults to true.
+  final bool sideBarInitiallyExpanded;
+
+  /// Width of the sidebar when expanded.
+  ///
+  /// Defaults to 250.
+  final double sideBarExpandedWidth;
+
+  /// Width of the sidebar when collapsed.
+  ///
+  /// Defaults to 72.
+  final double sideBarCollapsedWidth;
+
+  /// Custom builder for bottom bar items.
+  final VitBottomBarItemBuilder? bottomBarItemBuilder;
+
+  /// Custom builder for sidebar items.
+  final VitSideBarItemBuilder? sideBarItemBuilder;
+
+  /// Custom builder for sidebar header.
+  final VitSideBarHeaderBuilder? sideBarHeaderBuilder;
+
+  /// Custom builder for sidebar footer.
+  final VitSideBarFooterBuilder? sideBarFooterBuilder;
+
+  /// Color for selected navigation items.
+  final Color? navigationSelectedColor;
+
+  /// Color for unselected navigation items.
+  final Color? navigationUnselectedColor;
+
+  /// Background color for the navigation bar.
+  final Color? navigationBackgroundColor;
+
+  /// Whether to preserve page state using IndexedStack.
+  ///
+  /// Defaults to true.
+  final bool preserveNavigationState;
 
   @override
   Widget build(BuildContext context) {
+    final shouldShowAppBar = showAppBar &&
+        (appBar != null ||
+            title != null ||
+            titleWidget != null ||
+            leading != null);
+
+    final hasNavigation =
+        navigationItems != null && navigationPages != null;
+
+    if (hasNavigation) {
+      final effectiveAppBar = shouldShowAppBar
+          ? (appBar ??
+              VitAppBar(
+                title: title,
+                titleWidget: titleWidget,
+                leading: leading,
+                onLeadingPressed: onLeadingPressed,
+                leadingIcon: leadingIcon,
+                trailing: trailing,
+                centerTitle: centerTitle,
+              ))
+          : null;
+
+      return VitNavigationScaffold(
+        items: navigationItems!,
+        pages: navigationPages!,
+        initialIndex: navigationIndex ?? 0,
+        onIndexChanged: onNavigationIndexChanged,
+        tabletBreakpoint: tabletBreakpoint,
+        variant: navigationVariant,
+        animation: navigationAnimation,
+        labelBehavior: navigationLabelBehavior,
+        bottomBarItemBuilder: bottomBarItemBuilder,
+        sideBarItemBuilder: sideBarItemBuilder,
+        sideBarHeaderBuilder: sideBarHeaderBuilder,
+        sideBarFooterBuilder: sideBarFooterBuilder,
+        sideBarPosition: sideBarPosition,
+        sideBarItemStyle: sideBarItemStyle,
+        sideBarExpandable: sideBarExpandable,
+        sideBarInitiallyExpanded: sideBarInitiallyExpanded,
+        sideBarExpandedWidth: sideBarExpandedWidth,
+        sideBarCollapsedWidth: sideBarCollapsedWidth,
+        backgroundColor: navigationBackgroundColor,
+        selectedColor: navigationSelectedColor,
+        unselectedColor: navigationUnselectedColor,
+        preserveState: preserveNavigationState,
+        appBar: effectiveAppBar,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
+        scaffoldBackgroundColor: backgroundColor,
+        extendBodyBehindAppBar: extendBodyBehindAppBar,
+        extendBody: extendBody,
+      );
+    }
+
     Widget? defaultBody;
 
     if (children != null) {
@@ -463,7 +632,7 @@ class VitScaffold extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: _shouldShowAppBar
+      appBar: shouldShowAppBar
           ? (appBar ??
                 VitAppBar(
                   title: title,

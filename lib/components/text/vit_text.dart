@@ -153,6 +153,7 @@ class VitText extends _VitText {
     super.key,
     super.isHeading = false,
     super.isLoading = false,
+    super.overflow,
   }) : super(text: text);
 
   /// Creates a rich text component.
@@ -313,6 +314,7 @@ class _VitText extends StatelessWidget {
   final Map<String, VoidCallback>? onTapActions;
   final bool isHeading;
   final bool isLoading;
+  final TextOverflow? overflow;
 
   const _VitText({
     required this.baseStyle,
@@ -326,6 +328,7 @@ class _VitText extends StatelessWidget {
     this.isHeading = false,
     this.isLoading = false,
     super.key,
+    this.overflow,
   });
 
   @override
@@ -359,6 +362,7 @@ class _VitText extends StatelessWidget {
                   textAlign: textAlign,
                   textDirection: textDirection,
                   style: effectiveStyle,
+                  overflow: overflow,
                 ),
               ),
             ),

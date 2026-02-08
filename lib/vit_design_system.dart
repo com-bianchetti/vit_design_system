@@ -61,3 +61,4 @@ export 'utils/extensions.dart';
 export 'utils/skeleton_extension.dart';
 export 'components/layout/vit_scaffold.dart';
 export 'components/layout/vit_list_view.dart';
+export 'components/layout/vit_bottom_bar.dart';

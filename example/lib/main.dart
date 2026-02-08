@@ -9,6 +9,7 @@ import 'package:example/checkbox/vit_checkbox.dart';
 import 'package:example/chip/vit_chip.dart';
 import 'package:example/date/vit_date.dart';
 import 'package:example/dialog/vit_dialog.dart';
+import 'package:example/layout/vit_bottom_bar.dart';
 import 'package:example/loading/vit_loading.dart';
 import 'package:example/modal/vit_modal.dart';
 import 'package:example/form/vit_form.dart';
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
         VitAppBarStory,
         VitListViewStory,
         VitScaffoldStory,
+        VitBottomBarStory,
       ],
     );
   }
