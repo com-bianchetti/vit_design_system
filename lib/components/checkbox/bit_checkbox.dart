@@ -1,4 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -174,6 +176,18 @@ class BitCheckbox extends StatefulWidget {
   /// If provided, the validator will be called when the checkbox is saved.
   final FormFieldValidator<bool>? validator;
 
+  /// Whether the checkbox is in a skeleton loading state.
+  ///
+  /// When true, the checkbox displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this checkbox will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitCheckbox].
   ///
   /// The [value] parameter is required.
@@ -201,6 +215,7 @@ class BitCheckbox extends StatefulWidget {
     this.tristate = false,
     this.id,
     this.validator,
+    this.isLoading = false,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -249,6 +264,95 @@ class _BitCheckboxState extends State<BitCheckbox> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      if (widget.title == null) {
+        return BitSkeletonShimmer(
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: theme.skeletonBaseColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        );
+      }
+
+      final visualDensity = widget.visualDensity ?? theme.visualDensity;
+      final borderRadius = widget.borderRadius ?? theme.borderRadius;
+      final height = switch (visualDensity) {
+        VisualDensity.comfortable => 65.0,
+        VisualDensity.standard => 50.0,
+        VisualDensity.compact => 40.0,
+        _ => 50.0,
+      };
+
+      return BitSkeletonShimmer(
+        child: Container(
+          height: height,
+          padding: widget.padding,
+          decoration: BoxDecoration(
+            color: theme.skeletonBaseColor,
+            borderRadius: borderRadius,
+          ),
+          child: Row(
+            children: [
+              if (widget.checkboxPosition == BitCheckboxPosition.left) ...[
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: theme.skeletonHighlightColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    if (widget.subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 14,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color: theme.skeletonHighlightColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (widget.checkboxPosition == BitCheckboxPosition.right) ...[
+                const SizedBox(width: 16),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
 
     final checkbox = _buildCheckboxWidget(context, theme);
 

@@ -3,6 +3,7 @@ import 'package:bit_design_system/components/button/bit_button.dart';
 import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/components/popover/bit_popover.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
@@ -343,6 +344,18 @@ class BitSelect extends StatefulWidget {
   /// to store the select's value(s) in the form data map.
   final String? id;
 
+  /// Whether the select is in a skeleton loading state.
+  ///
+  /// When true, the select displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this select will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitSelect].
   ///
   /// The [options] parameter is required. All other parameters are optional
@@ -395,6 +408,7 @@ class BitSelect extends StatefulWidget {
     this.confirmButtonText,
     this.multiValueSeparator = ', ',
     this.id,
+    this.isLoading = false,
   });
 
   @override
@@ -518,6 +532,8 @@ class _BitSelectState extends State<BitSelect> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
     final input = BitInput(
       controller: _displayController,
       label: widget.label,
@@ -552,6 +568,7 @@ class _BitSelectState extends State<BitSelect> {
       visualDensity: widget.visualDensity,
       validator: widget.validator,
       onTap: _showOptions,
+      isLoading: effectiveLoading,
     );
 
     if (widget.id != null) {

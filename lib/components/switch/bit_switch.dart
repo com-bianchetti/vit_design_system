@@ -1,4 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
@@ -169,6 +171,18 @@ class BitSwitch extends StatefulWidget {
   /// to store the switch's value in the form data map.
   final String? id;
 
+  /// Whether the switch is in a skeleton loading state.
+  ///
+  /// When true, the switch displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this switch will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitSwitch].
   ///
   /// The [value] parameter is required.
@@ -195,6 +209,7 @@ class BitSwitch extends StatefulWidget {
     this.iconColor,
     this.enabled = true,
     this.id,
+    this.isLoading = false,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -242,6 +257,95 @@ class _BitSwitchState extends State<BitSwitch> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      if (widget.title == null) {
+        return BitSkeletonShimmer(
+          child: Container(
+            width: 51,
+            height: 31,
+            decoration: BoxDecoration(
+              color: theme.skeletonBaseColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        );
+      }
+
+      final visualDensity = widget.visualDensity ?? theme.visualDensity;
+      final borderRadius = widget.borderRadius ?? theme.borderRadius;
+      final height = switch (visualDensity) {
+        VisualDensity.comfortable => 65.0,
+        VisualDensity.standard => 50.0,
+        VisualDensity.compact => 40.0,
+        _ => 50.0,
+      };
+
+      return BitSkeletonShimmer(
+        child: Container(
+          height: height,
+          padding: widget.padding,
+          decoration: BoxDecoration(
+            color: theme.skeletonBaseColor,
+            borderRadius: borderRadius,
+          ),
+          child: Row(
+            children: [
+              if (widget.switchPosition == BitSwitchPosition.left) ...[
+                Container(
+                  width: 51,
+                  height: 31,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: theme.skeletonHighlightColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    if (widget.subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 14,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color: theme.skeletonHighlightColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (widget.switchPosition == BitSwitchPosition.right) ...[
+                const SizedBox(width: 16),
+                Container(
+                  width: 51,
+                  height: 31,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
 
     final switchWidget = _buildSwitchWidget(context, theme);
 

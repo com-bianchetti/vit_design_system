@@ -1,6 +1,3 @@
-import 'package:bit_design_system/components/dialog/bit_dialog.dart';
-import 'package:bit_design_system/components/form/bit_form.dart';
-import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:example/accordion/bit_accordion.dart';
 import 'package:example/avatar/bit_avatar.dart';
 import 'package:example/button/bit_button.dart';
@@ -41,7 +38,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Storybook(
       stories: [
-        BitSkeletonStory,
         BitTextStory,
         BitTextRichStory,
         BitButtonStory,
@@ -67,56 +63,8 @@ class MyApp extends StatelessWidget {
         BitDateStory,
         BitFormStory,
         BitFieldsStory,
+        BitSkeletonStory,
       ],
-    );
-  }
-}
-
-class ExampleForm extends StatelessWidget {
-  const ExampleForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: BitForm(
-        pages: [
-          BitFormPage(
-            title: 'Basic Info',
-            children: [
-              BitInput(
-                id: 'username',
-                label: 'Username',
-                hintText: 'johndoe',
-              ),
-              BitInput(
-                id: 'email',
-                label: 'Email',
-                hintText: 'johndoe@example.com',
-              ),
-            ],
-          ),
-          BitFormPage(
-            title: 'Password',
-            children: [
-              BitInput(
-                id: 'password',
-                label: 'Password',
-                hintText: 'Password',
-                obscureText: true,
-              ),
-              BitInput(
-                id: 'confirmPassword',
-                label: 'Confirm Password',
-                hintText: 'Confirm Password',
-                obscureText: true,
-              ),
-            ],
-          ),
-        ],
-        onComplete: (data) {
-          BitDialog.success(context, message: data.toString());
-        },
-      ),
     );
   }
 }

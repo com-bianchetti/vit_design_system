@@ -3,6 +3,7 @@ import 'package:bit_design_system/components/button/bit_button.dart';
 import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
 import 'package:bit_design_system/components/popover/bit_popover.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/config/bit_theme.dart';
 import 'package:bit_design_system/config/bit_types.dart';
@@ -238,6 +239,18 @@ class BitDate extends StatefulWidget {
   /// to store the date or date range in the form data map.
   final String? id;
 
+  /// Whether the date picker is in a skeleton loading state.
+  ///
+  /// When true, the date picker displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this date picker will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   const BitDate({
     super.key,
     this.value,
@@ -285,6 +298,7 @@ class BitDate extends StatefulWidget {
     this.headerStyle,
     this.selectDate = false,
     this.id,
+    this.isLoading = false,
   });
 
   @override
@@ -475,6 +489,8 @@ class _BitDateState extends State<BitDate> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
     final input = BitInput(
       controller: _displayController,
       label: widget.label,
@@ -509,6 +525,7 @@ class _BitDateState extends State<BitDate> {
       visualDensity: widget.visualDensity,
       validator: _validateDate,
       onTap: _showCalendar,
+      isLoading: effectiveLoading,
     );
 
     if (widget.id != null) {

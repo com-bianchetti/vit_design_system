@@ -1,5 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
 import 'package:bit_design_system/components/input/bit_input.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
 import 'package:bit_design_system/config/bit_types.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -190,6 +191,18 @@ class BitInputCount extends StatefulWidget {
   /// Returns an error message if validation fails, or null if valid.
   final FormFieldValidator<int>? validator;
 
+  /// Whether the input is in a skeleton loading state.
+  ///
+  /// When true, the input displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this input will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitInputCount].
   ///
   /// All parameters are optional and have sensible defaults.
@@ -224,6 +237,7 @@ class BitInputCount extends StatefulWidget {
     this.inputMode,
     this.inputLabelStyle,
     this.validator,
+    this.isLoading = false,
   });
 
   @override
@@ -355,6 +369,7 @@ class _BitInputCountState extends State<BitInputCount> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final effectiveIconColor = widget.iconColor ?? theme.primaryColor;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
 
     final bitInput = BitInput(
       controller: _controller,
@@ -378,6 +393,7 @@ class _BitInputCountState extends State<BitInputCount> {
       inputMode: widget.inputMode,
       inputLabelStyle: widget.inputLabelStyle,
       validator: (value) => widget.validator?.call(int.tryParse(value ?? '')),
+      isLoading: effectiveLoading,
       leading: IconButton(
         icon: Icon(
           widget.decrementIcon,

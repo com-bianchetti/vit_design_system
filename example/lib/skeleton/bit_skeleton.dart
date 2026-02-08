@@ -100,6 +100,19 @@ class BitSkeletonExampleList extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           BitButton(
+            text: 'Form Components',
+            icon: const Icon(Icons.list),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FormComponentsDemo(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          BitButton(
             text: 'All Components Demo',
             icon: const Icon(Icons.widgets),
             onPressed: () {
@@ -112,6 +125,138 @@ class BitSkeletonExampleList extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class FormComponentsDemo extends StatefulWidget {
+  const FormComponentsDemo({super.key});
+
+  @override
+  State<FormComponentsDemo> createState() => _FormComponentsDemoState();
+}
+
+class _FormComponentsDemoState extends State<FormComponentsDemo> {
+  bool _isLoading = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Form Components'),
+        actions: [
+          IconButton(
+            icon: Icon(_isLoading ? Icons.visibility : Icons.visibility_off),
+            onPressed: () {
+              setState(() {
+                _isLoading = !_isLoading;
+              });
+            },
+            tooltip: _isLoading ? 'Show content' : 'Show skeleton',
+          ),
+        ],
+      ),
+      body: BitLoadingScope(
+        loading: _isLoading,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const BitTitleBig('Form Controls', isLoading: false),
+            const SizedBox(height: 8),
+            const BitText(
+              'Toggle the eye icon to see form components in skeleton loading state.',
+              isLoading: false,
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Checkbox'),
+            const SizedBox(height: 8),
+            BitCheckbox(
+              value: true,
+              title: 'Accept terms and conditions',
+              subtitle: 'I agree to the terms of service',
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 8),
+            BitCheckbox(
+              value: false,
+              title: 'Subscribe to newsletter',
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Switch'),
+            const SizedBox(height: 8),
+            BitSwitch(
+              value: true,
+              title: 'Enable notifications',
+              subtitle: 'Receive updates and alerts',
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 8),
+            BitSwitch(
+              value: false,
+              title: 'Dark mode',
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Radio Buttons'),
+            const SizedBox(height: 8),
+            BitRadioGroup<String>(
+              value: 'option1',
+              options: const [
+                BitRadioOption(
+                  value: 'option1',
+                  title: 'Option 1',
+                  subtitle: 'First option description',
+                ),
+                BitRadioOption(
+                  value: 'option2',
+                  title: 'Option 2',
+                  subtitle: 'Second option description',
+                ),
+                BitRadioOption(
+                  value: 'option3',
+                  title: 'Option 3',
+                  subtitle: 'Third option description',
+                ),
+              ],
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Select'),
+            const SizedBox(height: 8),
+            BitSelect(
+              label: 'Country',
+              hintText: 'Select a country',
+              options: const ['USA', 'Canada', 'Mexico', 'Brazil'],
+              initialValue: 'USA',
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Date Picker'),
+            const SizedBox(height: 8),
+            BitDate(
+              label: 'Birth Date',
+              hintText: 'Select your birth date',
+              initialValue: DateTime.now(),
+              onChanged: (date) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Input Count'),
+            const SizedBox(height: 8),
+            BitInputCount(
+              label: 'Quantity',
+              value: 5,
+              onChanged: (value) {},
+            ),
+            const SizedBox(height: 24),
+            const BitTitle('Raw Input'),
+            const SizedBox(height: 8),
+            const BitRawInput(
+              placeholder: 'Enter text here...',
+            ),
+          ],
+        ),
       ),
     );
   }

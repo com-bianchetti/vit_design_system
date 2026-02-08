@@ -1,4 +1,6 @@
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -176,6 +178,18 @@ class BitRawInput extends StatefulWidget {
 
   final VisualDensity? visualDensity;
 
+  /// Whether the input is in a skeleton loading state.
+  ///
+  /// When true, the input displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this input will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitRawInput].
   ///
   /// All parameters are optional and have sensible defaults.
@@ -217,6 +231,7 @@ class BitRawInput extends StatefulWidget {
     this.semanticLabel,
     this.id,
     this.visualDensity,
+    this.isLoading = false,
   });
 
   @override
@@ -257,6 +272,39 @@ class _BitRawInputState extends State<BitRawInput> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      final effectiveFontSize = switch (widget.visualDensity ??
+          theme.visualDensity) {
+        VisualDensity.compact => theme.values.rawInputCompactFontSize,
+        VisualDensity.standard => theme.values.rawInputStandardFontSize,
+        VisualDensity.comfortable => theme.values.rawInputComfortableFontSize,
+        _ => theme.values.rawInputStandardFontSize,
+      };
+
+      final lineHeight = (widget.fontSize ?? effectiveFontSize) * 1.5;
+      final numberOfLines = widget.maxLines ?? 1;
+      final totalHeight = lineHeight * numberOfLines;
+
+      return BitSkeletonShimmer(
+        child: Container(
+          height: totalHeight,
+          padding: widget.contentPadding,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Container(
+              height: lineHeight,
+              width: 200,
+              decoration: BoxDecoration(
+                color: theme.skeletonBaseColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     final effectiveCursorColor = widget.cursorColor ?? theme.primaryColor;
     final effectiveTextColor =

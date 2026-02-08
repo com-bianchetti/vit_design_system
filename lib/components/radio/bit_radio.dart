@@ -1,6 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:bit_design_system/components/form/bit_form.dart';
+import 'package:bit_design_system/components/skeleton/bit_loading_scope.dart';
+import 'package:bit_design_system/components/skeleton/bit_skeleton_shimmer.dart';
 import 'package:bit_design_system/components/text/bit_text.dart';
 import 'package:bit_design_system/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -192,6 +194,18 @@ class BitRadio<T> extends StatelessWidget {
   /// to store the radio's value in the form data map.
   final String? id;
 
+  /// Whether the radio is in a skeleton loading state.
+  ///
+  /// When true, the radio displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this radio will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitRadio].
   ///
   /// The [value] parameter is required.
@@ -218,6 +232,7 @@ class BitRadio<T> extends StatelessWidget {
     this.iconColor,
     this.enabled = true,
     this.id,
+    this.isLoading = false,
     this.padding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
@@ -247,6 +262,95 @@ class BitRadio<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final effectiveLoading = isLoading || BitLoadingScope.isLoading(context);
+
+    if (effectiveLoading) {
+      if (title == null) {
+        return BitSkeletonShimmer(
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: theme.skeletonBaseColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      }
+
+      final visualDensity = this.visualDensity ?? theme.visualDensity;
+      final borderRadius = this.borderRadius ?? theme.borderRadius;
+      final height = switch (visualDensity) {
+        VisualDensity.comfortable => 65.0,
+        VisualDensity.standard => 50.0,
+        VisualDensity.compact => 40.0,
+        _ => 50.0,
+      };
+
+      return BitSkeletonShimmer(
+        child: Container(
+          height: height,
+          padding: padding,
+          decoration: BoxDecoration(
+            color: theme.skeletonBaseColor,
+            borderRadius: borderRadius,
+          ),
+          child: Row(
+            children: [
+              if (radioPosition == BitRadioPosition.left) ...[
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: theme.skeletonHighlightColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 14,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color: theme.skeletonHighlightColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (radioPosition == BitRadioPosition.right) ...[
+                const SizedBox(width: 16),
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: theme.skeletonHighlightColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
 
     final radio = _buildRadioWidget(context, theme);
 
@@ -442,6 +546,18 @@ class BitRadioGroup<T> extends StatefulWidget {
   /// If provided, the validator will be called when the radio group is saved.
   final FormFieldValidator<T>? validator;
 
+  /// Whether the radio group is in a skeleton loading state.
+  ///
+  /// When true, the radio group displays a shimmer skeleton effect while
+  /// preserving its original layout and dimensions.
+  ///
+  /// This property also responds to [BitLoadingScope]. If a [BitLoadingScope]
+  /// ancestor has [loading] set to true, this radio group will show skeleton
+  /// loading even if [isLoading] is false.
+  ///
+  /// Defaults to false.
+  final bool isLoading;
+
   /// Creates a [BitRadioGroup].
   ///
   /// The [options] parameter is required and must contain at least one option.
@@ -466,6 +582,7 @@ class BitRadioGroup<T> extends StatefulWidget {
     this.spacing = 8,
     this.id,
     this.validator,
+    this.isLoading = false,
   });
 
   @override
@@ -491,6 +608,8 @@ class _BitRadioGroupState<T> extends State<BitRadioGroup<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveLoading = widget.isLoading || BitLoadingScope.isLoading(context);
+
     final radios = Column(
       mainAxisSize: MainAxisSize.min,
       children: widget.options.asMap().entries.map((entry) {
@@ -529,6 +648,7 @@ class _BitRadioGroupState<T> extends State<BitRadioGroup<T>> {
               iconColor: widget.iconColor,
               padding: widget.padding,
               enabled: widget.enabled && (option.enabled ?? true),
+              isLoading: effectiveLoading,
             ),
             if (index < widget.options.length - 1)
               SizedBox(height: widget.spacing),
