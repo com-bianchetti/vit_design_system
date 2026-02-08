@@ -25,12 +25,16 @@ class _VitRawInputStoryWidgetState extends State<_VitRawInputStoryWidget> {
   final titleController = TextEditingController(text: 'Document Title');
   final headingController = TextEditingController(text: 'Main Heading');
   final notesController = TextEditingController();
+  final priceController = TextEditingController();
+  final codeController = TextEditingController();
 
   @override
   void dispose() {
     titleController.dispose();
     headingController.dispose();
     notesController.dispose();
+    priceController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
@@ -230,6 +234,81 @@ class _VitRawInputStoryWidgetState extends State<_VitRawInputStoryWidget> {
                       minLines: 4,
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Divider(),
+              const SizedBox(height: 16),
+              const Text(
+                'RAW INPUT WITH FORMATTERS',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Price Input with Currency Formatter (US)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              VitRawInput(
+                controller: priceController,
+                placeholder: r'$0.00',
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  VitCurrencyFormatter.locale(VitCurrencyLocale.en_US),
+                ],
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Price Input with Currency Formatter (BR)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: VitRawInput(
+                  placeholder: r'R$0,00',
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    VitCurrencyFormatter.locale(VitCurrencyLocale.pt_BR),
+                  ],
+                  textAlign: TextAlign.center,
+                  textColor: Colors.green.shade900,
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Code Input with Uppercase Formatter',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: VitRawInput(
+                  controller: codeController,
+                  placeholder: 'ENTER-CODE-HERE',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  inputFormatters: [
+                    VitUpperCaseFormatter(),
+                  ],
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
