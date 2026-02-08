@@ -4,6 +4,7 @@ import 'package:example/button/bit_button.dart';
 import 'package:example/button/bit_social_button.dart';
 import 'package:example/badge/bit_badge.dart';
 import 'package:example/card/bit_card.dart';
+import 'package:example/card/bit_list_card.dart';
 import 'package:example/checkbox/bit_checkbox.dart';
 import 'package:example/chip/bit_chip.dart';
 import 'package:example/date/bit_date.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         BitAvatarStory,
         BitBadgeStory,
         BitCardStory,
+        BitListCardStory,
         BitProgressStory,
         BitAccordionStory,
         BitSheetStory,
