@@ -1,0 +1,7 @@
+vit-docs/
+website/
+docusaurus/
+
+.git
+.github
+example/

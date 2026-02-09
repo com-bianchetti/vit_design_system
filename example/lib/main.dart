@@ -38,12 +38,21 @@ void main() {
   runApp(const MyApp());
 }
 
+Map<String, String> getQueryParameters() {
+  final uri = Uri.base;
+  return uri.queryParameters;
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final queryParams = getQueryParameters();
+    final initialStory = queryParams['story'];
+
     return Storybook(
+      initialStory: initialStory,
       stories: [
         VitTextStory,
         VitTextRichStory,
