@@ -460,7 +460,7 @@ void main() {
       );
 
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.elevation, isNull);
+      expect(appBar.elevation, 0.0);
     });
 
     testWidgets('no shadow when elevation is 0', (tester) async {
